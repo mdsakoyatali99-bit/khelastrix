@@ -1,0 +1,112 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "users": {
+      ".read": "auth.token.admin === true && root.child('adminSessions').child(auth.uid).child('until').val() > now",
+      ".indexOn": [
+        "username",
+        "phone",
+        "email"
+      ],
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "username": {
+          ".write": "auth != null && auth.uid === $uid && !root.child('users').child($uid).child('banned').exists()",
+          ".validate": "newData.isString() && newData.val().length >= 3 && newData.val().length <= 20 && newData.val().matches(/^[A-Za-z0-9_ ]+$/)"
+        }
+      }
+    },
+    "transactions": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || (auth.token.admin === true && root.child('adminSessions').child(auth.uid).child('until').val() > now))",
+        ".indexOn": [
+          "ts"
+        ]
+      }
+    },
+    "tournaments": {
+      ".read": "auth != null",
+      ".indexOn": [
+        "startAt",
+        "status",
+        "game"
+      ]
+    },
+    "participants": {
+      "$tid": {
+        ".read": "auth != null"
+      }
+    },
+    "room_secrets": {
+      "$tid": {
+        ".read": "auth != null && ((auth.token.admin === true && root.child('adminSessions').child(auth.uid).child('until').val() > now) || root.child('participants').child($tid).child(auth.uid).exists())"
+      }
+    },
+    "leaderboard": {
+      ".read": "auth != null",
+      ".indexOn": [
+        "earnings",
+        "wins"
+      ]
+    },
+    "deposit_claims": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid"
+      }
+    },
+    "withdraw_requests": {
+      ".read": "auth.token.admin === true && root.child('adminSessions').child(auth.uid).child('until').val() > now",
+      ".indexOn": [
+        "status",
+        "uid"
+      ]
+    },
+    "my_withdrawals": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid"
+      }
+    },
+    "sms_inbox": {
+      ".read": "auth.token.admin === true && root.child('adminSessions').child(auth.uid).child('until').val() > now",
+      ".indexOn": [
+        "receivedAt"
+      ]
+    },
+    "readerKeys": {
+      ".read": "auth.token.admin === true && root.child('adminSessions').child(auth.uid).child('until').val() > now"
+    },
+    "gameKeys": {
+      ".read": "auth.token.admin === true && root.child('adminSessions').child(auth.uid).child('until').val() > now"
+    },
+    "game_results": {
+      ".read": "auth.token.admin === true && root.child('adminSessions').child(auth.uid).child('until').val() > now"
+    },
+    "otp_log": {
+      ".read": "auth.token.admin === true && root.child('adminSessions').child(auth.uid).child('until').val() > now",
+      ".indexOn": [
+        "ts"
+      ]
+    },
+    "audit": {
+      ".read": "auth.token.admin === true && root.child('adminSessions').child(auth.uid).child('until').val() > now",
+      ".indexOn": [
+        "ts"
+      ]
+    },
+    "config": {
+      "public": {
+        ".read": true
+      },
+      "private": {
+        ".read": "auth.token.admin === true && root.child('adminSessions').child(auth.uid).child('until').val() > now"
+      }
+    },
+    "notifications": {
+      ".read": "auth != null",
+      ".indexOn": [
+        "ts"
+      ]
+    }
+  }
+}

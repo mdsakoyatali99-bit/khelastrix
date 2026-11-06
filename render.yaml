@@ -1,0 +1,29 @@
+# Optional: host the static PWA on Render. Cloud Functions + Realtime Database stay on Firebase.
+services:
+  - type: web
+    name: khelastrix
+    runtime: static
+    staticPublishPath: ./public
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Strict-Transport-Security
+        value: max-age=63072000; includeSubDomains; preload
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; script-src 'self' https://www.gstatic.com https://www.google.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.cloudfunctions.net https://*.run.app https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; frame-src https://www.google.com https://*.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self'"
+      - path: /sw.js
+        name: Cache-Control
+        value: no-cache
