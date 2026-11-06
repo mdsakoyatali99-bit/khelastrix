@@ -29,4 +29,4 @@ export function logo({ size = 120, animate = true } = {}) {
 export function feathers() {
   const f = (x, y, s, d, o) => `<g transform="translate(${x} ${y}) scale(${s})" opacity="${o}"><path d="M0 0C10-20 28-34 52-40 40-22 24-6 0 0Z" fill="#7a5cff"><animateTransform attributeName="transform" type="translate" values="0 0;12 -18;0 0" dur="${d}s" repeatCount="indefinite"/></path></g>`;
   return raw(`<svg viewBox="0 0 400 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${f(40, 120, 1.2, 9, .5)}${f(310, 220, .8, 11, .4)}${f(90, 420, 1.5, 13, .3)}${f(280, 560, 1, 10, .45)}${f(180, 40, .7, 12, .35)}</svg>`);
-      }
+}
