@@ -54,4 +54,4 @@ export default function adminApp(root, { path, navigate }) {
   // in-admin tab navigation without re-running the unlock check
   const o3 = on(root, 'click', '.adm-nav a', (e, a) => { e.preventDefault(); e.stopPropagation(); history.pushState({}, '', a.getAttribute('href')); path = location.pathname; panel(); });
   return () => { drop(); offS(); o1(); o2(); o3(); clearTimeout(idle); root.removeEventListener('submit', submit); ['click', 'keydown', 'touchstart'].forEach((ev) => document.removeEventListener(ev, resetIdle)); };
-    }
+}
