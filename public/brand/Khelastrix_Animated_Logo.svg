@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="1024" height="1024" viewBox="0 0 1024 1024" role="img"
+     aria-labelledby="title desc">
+  <title id="title">Khelastrix — Tournament Gaming Logo</title>
+  <desc id="desc">An animated esports shield logo with a golden trophy, game controller, and Khelastrix wordmark.</desc>
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff6a8"/><stop offset=".28" stop-color="#ffd33d"/>
+      <stop offset=".62" stop-color="#f59b00"/><stop offset="1" stop-color="#fff0a0"/>
+    </linearGradient>
+    <linearGradient id="silver" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#b8c5df"/>
+      <stop offset="1" stop-color="#68758f"/>
+    </linearGradient>
+    <linearGradient id="purple" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e04cff"/><stop offset="1" stop-color="#702bff"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7ce8ff"/><stop offset="1" stop-color="#176bff"/>
+    </linearGradient>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="9" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="12"/>
+      <feOffset dy="10"/><feComponentTransfer><feFuncA type="linear" slope=".7"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="shieldClip"><path d="M512 80 850 190 817 610Q790 820 512 944 234 820 207 610L174 190Z"/></clipPath>
+  </defs>
+
+  <style>
+    .pulse { animation: pulse 2.8s ease-in-out infinite; transform-origin:512px 500px; }
+    .float { animation: float 3.6s ease-in-out infinite; transform-origin:512px 330px; }
+    .shine { animation: shine 3.4s ease-in-out infinite; }
+    .orbit { animation: orbit 12s linear infinite; transform-origin:512px 500px; }
+    .spark { animation: twinkle 1.8s ease-in-out infinite alternate; }
+    @keyframes pulse { 0%,100%{opacity:.55; transform:scale(1)} 50%{opacity:1; transform:scale(1.035)} }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+    @keyframes shine { 0%{transform:translateX(-260px);opacity:0} 20%{opacity:.8} 55%,100%{transform:translateX(560px);opacity:0} }
+    @keyframes orbit { to{transform:rotate(360deg)} }
+    @keyframes twinkle { from{opacity:.25; transform:scale(.75)} to{opacity:1; transform:scale(1.2)} }
+    @media (prefers-reduced-motion: reduce) {
+      .pulse,.float,.shine,.orbit,.spark { animation:none !important; }
+    }
+  </style>
+
+  <rect width="1024" height="1024" rx="110" fill="#07091b"/>
+  <circle cx="512" cy="480" r="390" fill="#21104a" opacity=".45" filter="url(#glow)" class="pulse"/>
+  <g class="orbit" fill="none" stroke="url(#purple)" opacity=".65">
+    <ellipse cx="512" cy="500" rx="445" ry="300" stroke-width="5" stroke-dasharray="24 22"/>
+    <ellipse cx="512" cy="500" rx="400" ry="345" stroke-width="2" stroke-dasharray="4 24"/>
+  </g>
+  <g class="spark" fill="#ffe36b">
+    <path d="M150 330l9 25 25 9-25 9-9 25-9-25-25-9 25-9z"/>
+    <path d="M865 300l7 19 19 7-19 7-7 19-7-19-19-7 19-7z"/>
+    <path d="M835 700l6 16 16 6-16 6-6 16-6-16-16-6 16-6z"/>
+    <circle cx="235" cy="570" r="6"/><circle cx="785" cy="520" r="5"/>
+  </g>
+
+  <!-- Shield -->
+  <path d="M512 75 858 188 823 622Q795 830 512 955 229 830 201 622L166 188Z"
+        fill="#0d102b" stroke="url(#purple)" stroke-width="18" filter="url(#shadow)"/>
+  <path d="M512 105 825 207 793 611Q767 794 512 908 257 794 231 611L199 207Z"
+        fill="none" stroke="url(#gold)" stroke-width="8"/>
+  <path d="M512 128 795 220 767 600Q743 764 512 867 281 764 257 600L229 220Z"
+        fill="#111735" stroke="#3e2a83" stroke-width="3"/>
+
+  <!-- Trophy and controller -->
+  <g class="float" filter="url(#shadow)">
+    <path d="M392 195h240v66c0 113-51 171-120 171s-120-58-120-171z"
+          fill="url(#gold)" stroke="#fff0a0" stroke-width="8"/>
+    <path d="M392 220h-75c-5 78 26 127 104 137M632 220h75c5 78-26 127-104 137"
+          fill="none" stroke="url(#gold)" stroke-width="28" stroke-linecap="round"/>
+    <path d="M512 242l17 36 40 6-29 28 7 40-35-19-35 19 7-40-29-28 40-6z"
+          fill="#fff3a1" stroke="#d88700" stroke-width="5"/>
+    <path d="M470 435h84v42h-84z" fill="url(#gold)"/>
+    <path d="M430 477h164v24H430z" rx="8" fill="url(#gold)"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <path d="M300 525Q310 475 375 475h274q65 0 75 50l32 103q10 42-35 42h-88l-44-37H415l-44 37h-88q-45 0-35-42z"
+          fill="#151b37" stroke="url(#silver)" stroke-width="10"/>
+    <path d="M370 548v78M331 587h78" stroke="url(#silver)" stroke-width="18" stroke-linecap="round"/>
+    <circle cx="681" cy="558" r="17" fill="#ff4b67"/>
+    <circle cx="724" cy="589" r="17" fill="#ffd33d"/>
+    <circle cx="638" cy="589" r="17" fill="#35d8ff"/>
+    <circle cx="681" cy="620" r="17" fill="#7bff73"/>
+    <circle cx="457" cy="590" r="28" fill="#0b1029" stroke="url(#blue)" stroke-width="9"/>
+    <circle cx="567" cy="590" r="28" fill="#0b1029" stroke="url(#blue)" stroke-width="9"/>
+    <text x="512" y="572" text-anchor="middle" font-family="Arial,sans-serif" font-size="48" font-weight="900" fill="#fff">K</text>
+  </g>
+
+  <!-- Wordmark panel -->
+  <path d="M130 675 190 635H834l60 40-26 145H156z" fill="#050713" stroke="url(#purple)" stroke-width="10" filter="url(#shadow)"/>
+  <path d="M160 675H864" stroke="url(#gold)" stroke-width="7"/>
+  <text x="512" y="765" text-anchor="middle" font-family="Arial Black, Arial, sans-serif"
+        font-size="100" font-weight="900" letter-spacing="-5" paint-order="stroke"
+        stroke="#080817" stroke-width="18" stroke-linejoin="round">
+    <tspan fill="url(#silver)">Khela</tspan><tspan fill="url(#gold)">strix</tspan>
+  </text>
+  <path d="M235 800H789" stroke="url(#gold)" stroke-width="6" stroke-linecap="round"/>
+  <g fill="url(#gold)">
+    <path d="M512 815l10 20 22 3-16 15 4 22-20-11-20 11 4-22-16-15 22-3z"/>
+    <path d="M430 824l6 12 13 2-10 9 2 13-11-6-11 6 2-13-10-9 13-2z"/>
+    <path d="M594 824l6 12 13 2-10 9 2 13-11-6-11 6 2-13-10-9 13-2z"/>
+  </g>
+  <text x="512" y="895" text-anchor="middle" font-family="Arial,sans-serif"
+        font-size="25" font-weight="700" letter-spacing="8" fill="#d9def7">TOURNAMENT ARENA</text>
+
+  <!-- Moving light sweep across the wordmark -->
+  <g clip-path="url(#shieldClip)" pointer-events="none">
+    <rect class="shine" x="245" y="660" width="110" height="190"
+          transform="skewX(-22)" fill="#fff" opacity=".0"/>
+  </g>
+</svg>
