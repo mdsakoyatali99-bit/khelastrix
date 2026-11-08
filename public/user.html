@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Khelastrix — Tournament Arena</title>
+    <meta name="description" content="Khelastrix: join gaming tournaments, win real prizes, and manage your wallet in one premium esports arena.">
+    <meta name="theme-color" content="#07091B">
+    <meta name="application-name" content="Khelastrix">
+    <meta name="apple-mobile-web-app-title" content="Khelastrix">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="brand/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="brand/favicon-16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="brand/apple-touch-icon.png">
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Khelastrix">
+    <meta property="og:title" content="Khelastrix — Tournament Arena">
+    <meta property="og:description" content="Khelastrix: join gaming tournaments, win real prizes, and manage your wallet in one premium esports arena.">
+    <meta property="og:image" content="https://ludofire-arena.web.app/brand/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Khelastrix tournament arena logo">
+    <meta property="og:url" content="https://ludofire-arena.web.app/user.html">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Khelastrix — Tournament Arena">
+    <meta name="twitter:description" content="Khelastrix: join gaming tournaments, win real prizes, and manage your wallet in one premium esports arena.">
+    <meta name="twitter:image" content="https://ludofire-arena.web.app/brand/og-image.jpg">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-material-ui/material-ui.min.css" rel="stylesheet">
+    
+    <style>
+        /* ========================================
+           ROOT VARIABLES — Light Theme (Screenshot Style)
+           ======================================== */
+        :root {
+            --bg-body: #e3ebfa; /* হালকা নীল ব্যাকগ্রাউন্ড */
+            --bg-card: #ffffff; /* সাদা কার্ড */
+            --text-dark: #111827;
+            --text-gray: #6b7280;
+            --primary: var(--primary); /* ডার্ক টিল/গ্রিন (বাটন কালার) */
+            --primary-light: var(--primary-light);
+            --accent-purple: #7c3aed;
+            --accent-red: #ef4444;
+            --border-color: rgba(197,206,223,.16);
+            --radius-card: 20px;
+            --radius-sm: 12px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+        }
+
+        /* ========================================
+           RESET & BASE
+           ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Outfit', 'Hind Siliguri', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+            min-height: 100vh;
+            padding: 0 16px 80px 16px;
+            overflow-x: hidden;
+        }
+
+        /* ========================================
+           ANIMATIONS
+           ======================================== */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-up { opacity: 0; animation: fadeUp 0.4s ease forwards; }
+        .delay-1 { animation-delay: 0.05s; }
+
+        /* ========================================
+           SPLASH SCREEN
+           ======================================== */
+        #app-splash {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-card); z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease-out;
+        }
+        .splash-logo-box {
+            width: 100px; height: 100px;
+            background: var(--primary); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; padding: 10px;
+            margin-bottom: 20px;
+        }
+        .splash-logo-box img { width: 100%; height: 100%; object-fit: contain; border-radius: 50%; }
+        .splash-app-name { font-size: 24px; font-weight: 800; color: var(--text-dark); }
+        .splash-sub { font-size: 12px; color: var(--text-gray); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 40px; }
+        .splash-loader { width: 150px; height: 4px; background: rgba(255,255,255,.12); border-radius: 10px; overflow: hidden; }
+        .splash-loader-fill { height: 100%; width: 0%; background: var(--primary); border-radius: 10px; transition: width 0.15s linear; }
+
+        /* ========================================
+           GLOBAL LOADER
+           ======================================== */
+        #global-loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.8); z-index: 9999;
+            display: none; justify-content: center; align-items: center; flex-direction: column; gap: 16px;
+        }
+        #global-loader.active { display: flex; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(197,206,223,.16); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .loader-text { font-size: 14px; color: var(--text-gray); font-weight: 600; }
+
+        /* ========================================
+           APP HEADER
+           ======================================== */
+        .app-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 0 20px 0;
+        }
+        .brand-section { display: flex; align-items: center; gap: 12px; }
+        .brand-logo {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: #000; display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 900; color: #fff; overflow: hidden;
+        }
+        .brand-name { font-size: 20px; font-weight: 800; letter-spacing: 0.3px; color: var(--text-dark); }
+        .header-actions { display: flex; align-items: center; gap: 12px; }
+        .header-btn {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: transparent; border: none; color: var(--text-dark);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; cursor: pointer;
+        }
+        .header-btn .badge-dot { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-red); }
+        body.sub-page .app-header { display: none; }
+
+        /* ========================================
+           NOTICE BAR
+           ======================================== */
+        .notice-bar {
+            background: var(--bg-card); border-radius: var(--radius-sm);
+            padding: 10px 14px; margin-bottom: 20px;
+            display: flex; align-items: center; gap: 12px;
+            box-shadow: var(--shadow); overflow: hidden;
+        }
+        .notice-bar .pill {
+            background: var(--primary-light); color: var(--kx-neon);
+            padding: 4px 14px; border-radius: 30px; font-size: 10px; font-weight: 700;
+            white-space: nowrap; text-transform: uppercase;
+        }
+        .notice-bar .marquee { flex: 1; overflow: hidden; white-space: nowrap; }
+        .notice-bar .marquee span {
+            display: inline-block; animation: marqueeScroll 20s linear infinite;
+            font-size: 13px; font-weight: 500; color: var(--text-dark);
+        }
+        @keyframes marqueeScroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        /* ========================================
+           AUTH VIEW
+           ======================================== */
+        #auth-view {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-body); z-index: 5000;
+            display: none; flex-direction: column; overflow-y: auto; padding: 40px 20px;
+        }
+        #auth-view.active { display: flex; }
+        .auth-container { max-width: 400px; margin: auto; width: 100%; }
+        .auth-title { font-size: 28px; font-weight: 800; text-align: center; color: var(--text-dark); margin-bottom: 8px;}
+        .auth-subtitle { font-size: 14px; color: var(--text-gray); text-align: center; margin-bottom: 30px;}
+        .auth-card { background: var(--bg-card); border-radius: var(--radius-card); padding: 24px 20px; box-shadow: var(--shadow); }
+        
+        .auth-tabs { display: flex; gap: 10px; margin-bottom: 24px; background: rgba(255,255,255,.06); border-radius: var(--radius-sm); padding: 4px; }
+        .auth-tab { flex: 1; padding: 12px; text-align: center; font-size: 14px; font-weight: 700; color: var(--text-gray); border: none; background: none; border-radius: 10px; cursor: pointer; transition: var(--transition); }
+        .auth-tab.active { background: var(--bg-card); color: var(--text-dark); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+        .auth-form { display: none; }
+        .auth-form.active { display: block; animation: fadeUp 0.4s ease forwards; }
+
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-gray); margin-bottom: 6px; }
+        .form-group input { width: 100%; padding: 14px 16px; background: rgba(255,255,255,.06); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-dark); font-size: 14px; outline: none; }
+        .form-group input:focus { border-color: var(--kx-neon); background: var(--bg-card); }
+        .auth-checkbox-row { display: flex; align-items: center; gap: 10px; margin: 10px 0 20px; font-size: 12px; color: var(--text-gray); }
+        .btn-auth { width: 100%; padding: 16px; background: var(--primary); border: none; border-radius: var(--radius-sm); color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; }
+        
+        /* ========================================
+           MAIN CONTENT
+           ======================================== */
+        #main-content { display: none; }
+        #main-content.show { display: block; }
+        .app-section { display: none; animation: fadeUp 0.4s ease forwards; }
+        .app-section.active { display: block; }
+
+        /* ========================================
+           HOME - SLIDER & CATEGORIES
+           ======================================== */
+        .slider-container { width: 100%; aspect-ratio: 2.1/1; border-radius: var(--radius-card); overflow: hidden; position: relative; background: var(--bg-card); margin-bottom: 0; box-shadow: var(--shadow); }
+        .slider-wrapper { display: flex; width: 100%; height: 100%; transition: transform 0.6s ease; }
+        .slide { min-width: 100%; height: 100%; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .slider-dots { display: flex; justify-content: center; gap: 6px; padding: 12px 0; }
+        .dot { width: 6px; height: 6px; background: #cbd5e1; border-radius: 50%; }
+        .dot.active { width: 20px; background: var(--primary); border-radius: 10px; }
+
+        .section-header-custom { display: flex; justify-content: space-between; align-items: center; margin: 20px 0 14px 0; }
+        .section-title-custom { font-size: 16px; font-weight: 600; color: var(--text-dark); }
+        
+        .category-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .cat-card { background: var(--bg-card); border-radius: var(--radius-card); overflow: hidden; padding: 12px; box-shadow: var(--shadow); cursor: pointer; }
+        .cat-card-img { width: 100%; aspect-ratio: 16/10; object-fit: cover; border-radius: 12px; }
+        .cat-card-info { padding-top: 10px; }
+        .cat-card-title { font-weight: 700; font-size: 15px; color: var(--text-dark); }
+        .cat-card-count { font-size: 12px; color: var(--text-gray); font-weight: 500; margin-top: 2px; }
+
+        /* ========================================
+           PROFILE HEADER & MENU
+           ======================================== */
+        .profile-header-bg { padding: 20px 0; text-align: center; margin-bottom: 10px; }
+        .profile-avatar-box { width: 70px; height: 70px; border-radius: 50%; margin: 0 auto 10px; overflow: hidden; background: var(--bg-card); box-shadow: var(--shadow); }
+        .profile-avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-name { font-size: 18px; font-weight: 800; color: var(--text-dark); }
+        .profile-email { font-size: 13px; color: var(--text-gray); margin-bottom: 15px;}
+        
+        .profile-quick-actions { display: flex; justify-content: space-around; padding: 12px; background: var(--bg-card); border-radius: 20px; margin-bottom: 20px; box-shadow: var(--shadow); }
+        .p-qa-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; background: none; border: none; color: var(--text-gray); font-size: 11px; font-weight: 600; cursor: pointer; }
+        .p-qa-btn i { font-size: 18px; color: var(--text-dark); }
+
+        .menu-list { background: var(--bg-card); border-radius: var(--radius-card); padding: 8px 16px; box-shadow: var(--shadow); }
+        .menu-item { display: flex; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border-color); gap: 14px; color: var(--text-dark); text-decoration: none; background: none; width: 100%; font-size: 14px; font-weight: 600; cursor: pointer; border-left: none; border-right: none; border-top: none;}
+        .menu-item:last-child { border-bottom: none; }
+        .menu-item .icon-wrap i { font-size: 18px; color: var(--text-dark); }
+        .menu-item .menu-text { flex: 1; text-align: left; }
+        .menu-item .chevron { color: #7d88ad; font-size: 12px; }
+
+        /* ========================================
+           MATCH CARDS (Screenshot Style)
+           ======================================== */
+        .match-card { background: var(--bg-card); border-radius: var(--radius-card); overflow: hidden; margin-bottom: 20px; padding: 0; box-shadow: var(--shadow); cursor: pointer; }
+        .banner-box { position: relative; width: 100%; height: 180px; }
+        .banner-box img { width: 100%; height: 100%; object-fit: cover; }
+        .banner-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%); }
+        .badge-map, .badge-id { position: absolute; font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 20px; color: #fff; }
+        .badge-map { top: 12px; left: 12px; background: #10b981; }
+        .badge-id { top: 12px; right: 12px; background: rgba(0,0,0,0.6); }
+        .timer-badge { position: absolute; top: 45px; left: 12px; background: rgba(255,255,255,0.2); backdrop-filter: blur(4px); color: #fff; font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+        .banner-title { position: absolute; bottom: 12px; left: 12px; font-size: 20px; font-weight: 800; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); margin: 16px 16px 10px 16px; padding: 12px; background: rgba(255,255,255,.06); border-radius: var(--radius-sm); text-align: center; }
+        .stat-item { display: flex; flex-direction: column; align-items: center; }
+        .stat-item i { font-size: 14px; margin-bottom: 6px; }
+        .stat-item:nth-child(1) i { color: #d946ef; }
+        .stat-item:nth-child(2) i { color: #ef4444; }
+        .stat-item:nth-child(3) i { color: #f59e0b; }
+        .stat-item:nth-child(4) i { color: #10b981; }
+        .stat-lbl { font-size: 10px; color: var(--text-gray); margin-bottom: 2px; font-weight: 600; }
+        .stat-val { font-size: 13px; font-weight: 800; color: var(--text-dark); }
+
+        .action-container { display: flex; flex-direction: column; gap: 10px; padding: 0 16px 16px 16px; margin-top: 5px;}
+        .spots-left { font-size: 11px; color: #ef4444; font-weight: 600; text-align: right; margin-bottom: -5px;}
+        .bar-bg { height: 8px; background: rgba(255,255,255,.12); border-radius: 10px; overflow: hidden; }
+        .bar-fill { height: 100%; background: var(--primary); border-radius: 10px; width: 0; }
+
+        .btn-join-main { background: var(--primary); color: #fff; padding: 12px 24px; border: none; border-radius: 20px; font-weight: 600; font-size: 14px; cursor: pointer; width: 100%; }
+        .btn-join-main.disabled { background: #7d88ad; }
+        .btn-join-main.result-btn { background: rgba(255,255,255,.06); color: var(--text-dark); }
+        
+        .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px 16px 16px; }
+        .btn-bottom { background: rgba(255,255,255,.06); border: 1px solid var(--border-color); padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 600; color: var(--text-gray); display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-bottom:first-child { background: var(--bg-card); border-color: rgba(197,206,223,.16); color: var(--text-dark); }
+
+        /* ========================================
+           MATCH TABS
+           ======================================== */
+        .match-tabs-container { display: flex; gap: 10px; margin: 0 0 16px 0; }
+        .m-tab { flex: 1; padding: 12px; text-align: center; font-size: 14px; font-weight: 600; color: var(--text-gray); border: none; background: rgba(255,255,255,.06); border-radius: 20px; cursor: pointer; }
+        .m-tab.active { background: var(--primary); color: #fff; }
+
+        /* ========================================
+           WALLET & SUB PAGES (Light Theme)
+           ======================================== */
+        .wallet-gradient-card { background: var(--primary); border-radius: var(--radius-card); padding: 24px; color: #fff; margin-bottom: 20px; box-shadow: var(--shadow); }
+        .wg-label { font-size: 12px; opacity: 0.8; }
+        .wg-balance { font-size: 32px; font-weight: 800; margin-top: 5px; }
+        .wallet-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .wallet-stat { background: var(--bg-card); border-radius: 16px; padding: 16px; text-align: center; box-shadow: var(--shadow); }
+        .ws-amount { font-size: 18px; font-weight: 800; color: var(--text-dark); margin-top: 4px;}
+        .ws-label { font-size: 10px; color: var(--text-gray); font-weight: 700; text-transform: uppercase; }
+
+        .wallet-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .wa-btn { padding: 14px; border: none; border-radius: 16px; font-weight: 700; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .wa-btn.add { background: var(--primary); color: #fff; }
+        .wa-btn.withdraw { background: #10b981; color: #fff; }
+
+        .method-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .method-card { background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 12px; padding: 14px 8px; text-align: center; cursor: pointer; }
+        .method-card.active { border-color: var(--kx-neon); background: rgba(255,255,255,.06); }
+        .method-card img { width: 32px; height: 32px; object-fit: contain; margin: 0 auto 4px; display: block; }
+        .method-card span { font-size: 11px; font-weight: 600; color: var(--text-gray); }
+
+        .am-box { background: var(--bg-card); border-radius: var(--radius-card); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow); }
+        .am-input { width: 100%; padding: 14px 16px; background: rgba(255,255,255,.06); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-dark); font-size: 14px; outline: none; margin-bottom: 16px; }
+        .am-verify-btn { width: 100%; padding: 16px; background: var(--primary); color: #fff; border: none; border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; }
+        
+        .wd-input-group { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,.06); border: 1px solid var(--border-color); border-radius: 12px; padding: 4px 14px; margin-bottom: 14px; }
+        .wd-input-group input { flex: 1; padding: 14px 0; background: transparent; border: none; color: var(--text-dark); font-size: 14px; outline: none; }
+        .wd-submit-btn { width: 100%; padding: 16px; background: #10b981; color: #fff; border: none; border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; }
+
+        /* History / Empty msg */
+        .history-card { background: var(--bg-card); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); border-left: 4px solid var(--primary); }
+        .hc-title { font-weight: 700; font-size: 14px; color: var(--text-dark); }
+        .hc-date { font-size: 11px; color: var(--text-gray); }
+        .hc-amount { font-size: 13px; font-weight: 700; color: var(--text-dark); margin-top: 4px; }
+        .empty-msg { text-align: center; padding: 40px 20px; color: var(--text-gray); font-weight: 500; font-size: 14px; }
+
+        /* ========================================
+           JOIN MATCH PAGE (Screenshot 1)
+           ======================================== */
+        .join-card { background: var(--bg-card); border-radius: var(--radius-card); padding: 20px; margin: 0 0 20px 0; box-shadow: var(--shadow); }
+        .join-match-title { font-size: 20px; font-weight: 800; color: var(--text-dark); margin-bottom: 4px; }
+        .join-meta { font-size: 13px; color: var(--text-gray); margin-bottom: 16px; }
+        .join-warning { border: 1px solid #fcd34d; background: #fef3c7; color: #b45309; font-size: 13px; font-weight: 600; text-align: center; padding: 12px; border-radius: 12px; margin-bottom: 16px; }
+        .join-badge { background: rgba(255,255,255,.06); color: #7c3aed; padding: 6px 24px; border-radius: 20px; font-weight: 700; font-size: 14px; display: inline-block; }
+        .join-badge-container { text-align: center; margin-bottom: 16px; }
+        .join-input { width: 100%; padding: 14px 16px; background: rgba(255,255,255,.06); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-dark); font-size: 14px; outline: none; margin-bottom: 12px; }
+        .join-btn-full { position: fixed; bottom: 20px; left: 5%; width: 90%; padding: 16px; background: var(--primary); color: #fff; border: none; border-radius: 16px; font-size: 18px; font-weight: 800; cursor: pointer; z-index: 100; }
+
+        /* ========================================
+           BACK NAV & BOTTOM NAV
+           ======================================== */
+        .back-nav { display: flex; align-items: center; gap: 12px; padding: 16px 0 20px 0; font-size: 16px; font-weight: 700; color: var(--text-dark); cursor: pointer; border: none; background: none; width: 100%; }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999; background: var(--bg-card); border-top: 1px solid var(--border-color); padding: 10px 0 env(safe-area-inset-bottom, 10px) 0; box-shadow: 0 -4px 12px rgba(0,0,0,0.05); }
+        .bottom-nav.hidden { display: none; }
+        .nav-items { display: flex; justify-content: space-around; max-width: 430px; margin: 0 auto; padding: 0 8px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #7d88ad; font-size: 11px; font-weight: 600; gap: 4px; background: none; border: none; cursor: pointer; }
+        .nav-item i { font-size: 22px; }
+        .nav-item.active { color: var(--text-dark); }
+        .nav-item.active i { color: var(--text-dark); }
+
+        /* Modal & Misc */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal.active { display: flex; }
+        .modal-box { background: var(--bg-card); border-radius: var(--radius-card); max-width: 380px; width: 100%; padding: 24px; animation: fadeUp 0.3s ease forwards; position: relative;}
+        .popup-title { font-size: 18px; font-weight: 800; color: var(--text-dark); }
+        .popup-close-btn { position: absolute; top: 15px; right: 15px; width: 30px; height: 30px; background: rgba(255,255,255,.06); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-dark); font-weight: 700; }
+        .am-copy-btn { background: rgba(255,255,255,.06); color: var(--text-dark); border: none; border-radius: 6px; padding: 4px 12px; font-size: 11px; font-weight: 600; cursor: pointer; }
+        .footer-credit { text-align: center; padding: 30px 0 10px 0; opacity: 0.7; }
+        .footer-credit .dev-name { font-size: 13px; font-weight: 600; color: var(--text-dark); }
+        
+        /* SweetAlert2 Overrides */
+        .swal2-popup { background: var(--bg-card) !important; border-radius: 20px !important; color: var(--text-dark) !important; font-family: 'Outfit', sans-serif !important;}
+        .swal2-title, .swal2-html-container { color: var(--text-dark) !important; }
+        .swal2-confirm { background: var(--primary) !important; border-radius: 12px !important; font-weight: 700 !important; }
+        .swal2-cancel { background: rgba(255,255,255,.06) !important; color: var(--text-dark) !important; border-radius: 12px !important; font-weight: 600 !important; }
+
+        @media (min-width: 600px) {
+            body { padding: 0 32px 80px 32px; }
+            .category-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        }
+
+        
+
+        /* ============================================================
+           KHELASTRIX BRAND THEME — official palette
+           Gold #FFD33D · Deep Purple #702BFF · Neon Purple #E04CFF
+           Navy #07091B · Background #0D102B · Silver #C5CEDF
+           ============================================================ */
+        :root {
+            --kx-gold:#FFD33D; --kx-purple:#702BFF; --kx-neon:#E04CFF; --kx-navy:#07091B; --kx-bg:#0D102B; --kx-silver:#C5CEDF;
+            --kx-grad: linear-gradient(135deg,#702BFF 0%,#E04CFF 100%);
+            --bg-body:#07091B; --bg-card:#0D102B; --text-dark:#F2F4FF; --text-gray:#9AA6C4;
+            --primary:#702BFF; --primary-light:rgba(112,43,255,.2); --accent-purple:#E04CFF;
+            --border-color:rgba(197,206,223,.14); --border:rgba(197,206,223,.14);
+            --shadow:0 6px 18px rgba(0,0,0,.35);
+            color-scheme: dark;
+        }
+        body { background: radial-gradient(1100px 480px at 50% -8%, rgba(112,43,255,.22), transparent 62%) fixed, var(--bg-body); color: var(--text-dark); }
+        ::placeholder { color:#6f7aa0; opacity:1; }
+        input, select, textarea { color-scheme: dark; }
+        :focus-visible { outline: 2px solid var(--kx-gold); outline-offset: 2px; }
+        .swal2-popup { background: var(--kx-bg) !important; border: 1px solid var(--border-color) !important; color: var(--text-dark) !important; }
+        .swal2-title, .swal2-html-container { color: var(--text-dark) !important; }
+        .swal2-confirm { background: var(--kx-grad) !important; }
+        .swal2-cancel { background: rgba(255,255,255,.08) !important; color: var(--text-dark) !important; }
+        .swal2-input, .swal2-textarea, .swal2-select { background: rgba(255,255,255,.05) !important; color: var(--text-dark) !important; border: 1px solid var(--border-color) !important; }
+        .swal2-select option { background: var(--kx-bg); color: var(--text-dark); }
+
+        /* ---- Header ---- */
+        .app-header { border-bottom: 1px solid rgba(255,211,61,.18); gap: 10px; }
+        .brand-section { min-width: 0; gap: 12px; }
+        .brand-logo { width: 48px; height: 48px; flex: none; border-radius: 11%; overflow: hidden !important; background: var(--kx-navy) !important;
+            box-shadow: 0 0 0 1px rgba(255,211,61,.35), 0 4px 14px rgba(112,43,255,.35); display: block; }
+        .brand-logo img { width: 100%; height: 100%; display: block; }
+        .brand-name { font-size: 17px; letter-spacing: .16em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            color: var(--kx-silver); background: linear-gradient(90deg,#fff 0%,var(--kx-silver) 45%,var(--kx-gold) 100%);
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        @media (min-width: 768px) { .brand-logo { width: 56px; height: 56px; } .brand-name { font-size: 20px; } }
+        @media (max-width: 340px) { .brand-logo { width: 42px; height: 42px; } .brand-name { font-size: 14px; letter-spacing: .1em; } }
+        .auth-logo { width: min(48vw, 170px); aspect-ratio: 1; margin: 8px auto 6px; border-radius: 11%; overflow: hidden;
+            box-shadow: 0 0 0 1px rgba(255,211,61,.28), 0 14px 40px rgba(112,43,255,.4); }
+        .auth-logo img { width: 100%; height: 100%; display: block; }
+
+        /* ---- Loading screen ---- */
+        #app-splash { background: radial-gradient(circle at 50% 36%, #1c1050 0%, #0D102B 46%, #07091B 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+        .kx-splash-glow { position: absolute; inset: 0; pointer-events: none;
+            background: radial-gradient(420px 340px at 50% 38%, rgba(112,43,255,.42), transparent 70%), radial-gradient(260px 200px at 64% 28%, rgba(255,211,61,.16), transparent 70%);
+            animation: kxHalo 3.2s ease-in-out infinite; }
+        @keyframes kxHalo { 0%,100% { opacity: .6; } 50% { opacity: 1; } }
+        .kx-splash-inner { position: relative; display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 24px; text-align: center; }
+        .kx-splash-logo { width: min(64vw, 270px); aspect-ratio: 1; border-radius: 11%; overflow: hidden; box-shadow: 0 0 0 1px rgba(255,211,61,.28), 0 20px 70px rgba(112,43,255,.5); }
+        .kx-splash-logo img { width: 100%; height: 100%; display: block; }
+        .kx-splash-powered { font-size: 12px; font-weight: 700; letter-spacing: .34em; color: var(--kx-silver); text-indent: .34em; }
+        .splash-loader { width: min(62vw, 230px); height: 4px; background: rgba(197,206,223,.16); border-radius: 99px; overflow: hidden; margin: 0; }
+        .splash-loader-fill { background: linear-gradient(90deg,#702BFF,#E04CFF 60%,#FFD33D); border-radius: 99px; }
+        .kx-splash-status { font-size: 11px; font-weight: 600; letter-spacing: .3em; color: var(--text-gray); text-indent: .3em; }
+        @media (prefers-reduced-motion: reduce) { .kx-splash-glow { animation: none; opacity: .85; } }
+
+        /* ---- Auth / forms ---- */
+        .auth-tabs { background: rgba(255,255,255,.06); }
+        .auth-tab.active { background: rgba(112,43,255,.3); color: var(--kx-gold); box-shadow: none; }
+        .form-group input, .am-input, .join-input, .wd-input-group { background: rgba(255,255,255,.05); color: var(--text-dark); border-color: var(--border-color); }
+        .wd-input-group input { background: transparent; color: var(--text-dark); }
+        .form-group input:focus { border-color: var(--kx-neon); background: rgba(255,255,255,.08); }
+        .btn-auth, .am-verify-btn, .join-btn-full, .wa-btn.add { background: var(--kx-grad); color: #fff; }
+        .btn-join-main { background: var(--kx-gold); color: var(--kx-navy); }
+        .btn-join-main.disabled { background: #3a4066; color: #8d96bb; }
+        .btn-join-main.result-btn { background: rgba(255,255,255,.08); color: var(--text-dark); }
+        .m-tab.active { background: var(--kx-grad); color: #fff; }
+        .bar-fill { background: linear-gradient(90deg, var(--kx-gold), #f59b00); }
+        .bar-bg { background: rgba(255,255,255,.1); }
+
+        /* ---- Cards, wallet, modals ---- */
+        .cat-card, .wallet-stat, .am-box, .join-card, .history-card, .profile-quick-actions, .modal-box { box-shadow: var(--shadow), inset 0 0 0 1px var(--border-color); }
+        .wallet-gradient-card { background: linear-gradient(135deg,#3b1397 0%,#702BFF 58%,#E04CFF 135%); box-shadow: 0 10px 28px rgba(112,43,255,.28); border: 1px solid rgba(255,211,61,.3); }
+        .method-card { background: var(--bg-card); }
+        .method-card.active { border-color: var(--kx-gold); background: rgba(255,211,61,.08); }
+        .join-warning { background: rgba(255,211,61,.1); border-color: rgba(255,211,61,.4); color: var(--kx-gold); }
+        .join-badge { background: rgba(224,76,255,.16); color: var(--kx-neon); }
+        .popup-close-btn, .am-copy-btn { background: rgba(255,255,255,.08); color: var(--text-dark); }
+        .modal { background: rgba(3,4,14,.74); }
+        #global-loader { background: rgba(7,9,27,.8); }
+        .spinner { border-color: rgba(255,255,255,.12); border-top-color: var(--kx-gold); }
+
+        /* ---- Bottom navigation ---- */
+        .bottom-nav { background: rgba(13,16,43,.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid rgba(255,211,61,.2); }
+        .nav-item { color: #7d88ad; }
+        .nav-item.active, .nav-item.active i { color: var(--kx-gold); }
+    </style>
+</head>
+<body>
+
+    <!-- SPLASH SCREEN -->
+    <div id="app-splash" role="status" aria-live="polite" aria-label="Loading Khelastrix">
+        <div class="kx-splash-glow" aria-hidden="true"></div>
+        <div class="kx-splash-inner">
+            <div class="kx-splash-logo" data-kx-logo="270"></div>
+            <div class="kx-splash-powered">POWERED BY KHELASTRIX</div>
+            <div class="splash-loader" role="progressbar" aria-label="Loading"><div class="splash-loader-fill" id="splash-progress"></div></div>
+            <div class="kx-splash-status">PREPARING YOUR ARENA...</div>
+        </div>
+    </div>
+
+    <!-- GLOBAL LOADER -->
+    <div id="global-loader">
+        <div class="spinner"></div>
+        <div class="loader-text">Processing...</div>
+    </div>
+
+    <!-- AUTH VIEW -->
+    <div id="auth-view">
+        <div class="auth-container">
+            <div class="auth-logo" data-kx-logo="170"></div>
+            <div id="login-container" style="display:flex; flex-direction:column;">
+                <div class="auth-title">Welcome Back</div>
+                <div class="auth-subtitle">Sign in to your account</div>
+                <div class="auth-card">
+                    <div class="auth-tabs">
+                        <button class="auth-tab active" onclick="window.toggleAuthMode('login')">Login</button>
+                        <button class="auth-tab" onclick="window.toggleAuthMode('register')">Register</button>
+                    </div>
+                    <form id="loginForm" class="auth-form active" onsubmit="window.emailLogin(); return false;">
+                        <div class="form-group"><label>Email Address</label><input type="email" id="login-email" placeholder="your@email.com" required></div>
+                        <div class="form-group"><label>Password</label><input type="password" id="login-pass" placeholder="Enter password" required></div>
+                        <div class="auth-checkbox-row"><input type="checkbox" checked><span>I agree to Terms</span></div>
+                        <button type="submit" class="btn-auth">Sign In</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div id="register-container" style="display:none; flex-direction:column;">
+                <div class="auth-title">Let's Start</div>
+                <div class="auth-subtitle">Create an account</div>
+                <div class="auth-card">
+                    <div class="auth-tabs">
+                        <button class="auth-tab" onclick="window.toggleAuthMode('login')">Login</button>
+                        <button class="auth-tab active" onclick="window.toggleAuthMode('register')">Register</button>
+                    </div>
+                    <form id="registerForm" class="auth-form active" onsubmit="window.emailRegister(); return false;">
+                        <div class="form-group"><label>Full Name</label><input type="text" id="reg-username" placeholder="Your name" required></div>
+                        <div class="form-group"><label>Email Address</label><input type="email" id="reg-email" placeholder="your@email.com" required></div>
+                        <div class="form-group"><label>Mobile Number</label><input type="number" id="reg-phone" placeholder="01XXXXXXXXX" required></div>
+                        <div class="form-group"><label>Password</label><input type="password" id="reg-pass" placeholder="Min 8 characters" required></div>
+                        <button type="submit" class="btn-auth">Sign Up</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main-content">
+        
+        <!-- HEADER -->
+        <header class="app-header animate-fade-up delay-1">
+            <div class="brand-section">
+                <div class="brand-logo" data-kx-logo="56"></div>
+                <span class="brand-name">KHELASTRIX</span>
+            </div>
+            <div class="header-actions">
+                <button class="header-btn" onclick="window.navigateSub('notifications')">
+                    <i class="fa-regular fa-bell"></i>
+                </button>
+                <button class="header-btn" onclick="window.openSupport()">
+                    <i class="fa-regular fa-user-circle"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- HOME VIEW -->
+        <section id="tab-home-view" class="app-section active">
+            <div class="notice-bar animate-fade-up delay-1">
+                <div class="pill"><i class="fa-solid fa-bullhorn"></i> Notice</div>
+                <div class="marquee">
+                    <span id="dynamic-notice">🏆 Welcome to Khelastrix! Join matches and win big prizes.</span>
+                </div>
+            </div>
+
+            <div class="slider-container">
+                <div id="banner-slider-wrapper" class="slider-wrapper"></div>
+            </div>
+            <div id="slider-dots" class="slider-dots"></div>
+
+            <div class="section-header-custom">
+                <h2 class="section-title-custom">Choose Your Game</h2>
+            </div>
+
+            <div id="dynamic-category-list" class="category-grid"></div>
+        </section>
+
+        <!-- MY MATCHES VIEW -->
+        <section id="tab-mymatches-view" class="app-section">
+            <div style="padding:16px 0;">
+                <div style="font-size:18px; font-weight:800; margin-bottom:16px; color:var(--text-dark);">My Matches</div>
+                <div id="mymatches-container"></div>
+            </div>
+        </section>
+
+        <!-- PROFILE VIEW -->
+        <section id="tab-profile-view" class="app-section">
+            <div class="profile-header-bg">
+                <div class="profile-avatar-box">
+                    <img id="profile-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+                </div>
+                <div class="profile-name" id="profile-name">Guest User</div>
+                <div class="profile-email" id="profile-email">Please login to continue</div>
+            </div>
+
+            <div class="profile-quick-actions">
+                <button class="p-qa-btn" onclick="window.navigateSub('add-money')"><i class="fa-solid fa-arrow-down"></i> Deposit</button>
+                <button class="p-qa-btn" onclick="window.navigateSub('withdraw')"><i class="fa-solid fa-arrow-up"></i> Withdraw</button>
+                <button class="p-qa-btn" onclick="window.navigateSub('refer')"><i class="fa-solid fa-gift"></i> Gift</button>
+                <button class="p-qa-btn" onclick="window.navigateSub('history')"><i class="fa-solid fa-clock-rotate-left"></i> History</button>
+            </div>
+
+            <div class="menu-list">
+                <button class="menu-item" onclick="window.navigateSub('edit-profile')">
+                    <div class="icon-wrap"><i class="fa-solid fa-pen"></i></div>
+                    <span class="menu-text">Edit Profile</span>
+                    <i class="fa-solid fa-chevron-right chevron"></i>
+                </button>
+                <button class="menu-item" onclick="window.navigateSub('wallet')">
+                    <div class="icon-wrap"><i class="fa-solid fa-wallet"></i></div>
+                    <span class="menu-text">My Wallet</span>
+                    <i class="fa-solid fa-chevron-right chevron"></i>
+                </button>
+                <button class="menu-item" onclick="window.navigateSub('refer')">
+                    <div class="icon-wrap"><i class="fa-solid fa-share-nodes"></i></div>
+                    <span class="menu-text">Refer & Earn</span>
+                    <i class="fa-solid fa-chevron-right chevron"></i>
+                </button>
+                <button class="menu-item" onclick="window.openSupport()">
+                    <div class="icon-wrap"><i class="fa-solid fa-headset"></i></div>
+                    <span class="menu-text">Supports</span>
+                    <i class="fa-solid fa-chevron-right chevron"></i>
+                </button>
+                <button class="menu-item" onclick="window.navigateSub('developer')">
+                    <div class="icon-wrap"><i class="fa-solid fa-code"></i></div>
+                    <span class="menu-text">Developer Profile</span>
+                    <i class="fa-solid fa-chevron-right chevron"></i>
+                </button>
+                <button class="menu-item" onclick="window.handleLogout()">
+                    <div class="icon-wrap"><i class="fa-solid fa-power-off" style="color:var(--accent-red);"></i></div>
+                    <span class="menu-text" style="color:var(--accent-red);">Logout</span>
+                </button>
+            </div>
+            
+            <div class="footer-credit">
+                <div class="dev-name">Developer — Iasan</div>
+            </div>
+        </section>
+
+        <!-- MATCHES VIEW (Category) -->
+        <section id="matches-view" class="app-section">
+            <button class="back-nav" onclick="window.showTab('home')">
+                <i class="fa-solid fa-arrow-left"></i> Back
+            </button>
+            
+            <div class="match-tabs-container">
+                <button class="m-tab active" id="mt-Upcoming" onclick="window.filterMatchTab('Upcoming')">Matches</button>
+                <button class="m-tab" id="mt-Finished" onclick="window.filterMatchTab('Finished')">Result</button>
+            </div>
+
+            <div id="matches-container"></div>
+        </section>
+
+        <!-- WALLET VIEW -->
+        <section id="wallet-view" class="app-section">
+            <button class="back-nav" onclick="window.showTab('profile')">
+                <i class="fa-solid fa-arrow-left"></i> My Wallet
+            </button>
+
+            <div class="wallet-container">
+                <div class="wallet-gradient-card">
+                    <div class="wg-label">Available Balance</div>
+                    <div class="wg-balance">৳ <span id="wallet-balance-display">0.00</span></div>
+                </div>
+
+                <div class="wallet-stats">
+                    <div class="wallet-stat">
+                        <div class="ws-label">DEPOSITED</div>
+                        <div class="ws-amount">৳ <span id="deposit-available-wallet">0</span></div>
+                    </div>
+                    <div class="wallet-stat">
+                        <div class="ws-label">WINNING</div>
+                        <div class="ws-amount">৳ <span id="withdraw-available-wallet">0</span></div>
+                    </div>
+                </div>
+
+                <div class="wallet-actions">
+                    <button class="wa-btn add" onclick="window.navigateSub('add-money')">+ Add Money</button>
+                    <button class="wa-btn withdraw" onclick="window.navigateSub('withdraw')">Withdraw</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ADD MONEY VIEW -->
+        <section id="add-money-view" class="app-section">
+            <button class="back-nav" onclick="window.navigateSub('wallet')">
+                <i class="fa-solid fa-arrow-left"></i> Add Money
+            </button>
+
+            <div class="method-grid">
+                <div class="method-card active" id="tab-bkash" onclick="window.switchPayTab('bkash')">
+                    <img src="https://i.ibb.co.com/qF1xD5xj/image-search-1769091253468.png" alt="bKash"><span>bKash</span>
+                </div>
+                <div class="method-card" id="tab-rocket" onclick="window.switchPayTab('rocket')">
+                    <img src="https://i.ibb.co.com/MDt4TzDf/image-search-1769091463880.png" alt="Rocket"><span>Rocket</span>
+                </div>
+                <div class="method-card" id="tab-nagad" onclick="window.switchPayTab('nagad')">
+                    <img src="https://i.ibb.co.com/4gmdTj1f/image-search-1769091285966.png" alt="Nagad"><span>Nagad</span>
+                </div>
+            </div>
+
+            <div id="content-bkash" class="am-box">
+                <div style="font-weight:800; margin-bottom:10px;">bKash Payment</div>
+                <input type="text" id="trx-bkash" class="am-input" placeholder="Enter Transaction ID">
+                <div style="font-size:12px; margin-bottom:10px;">Send Money to: <b id="bkash-num-display">Loading...</b> <button class="am-copy-btn" onclick="window.copyToClipboard('bkash-num-display')">Copy</button></div>
+            </div>
+            <div id="content-rocket" class="am-box" style="display:none;">
+                <div style="font-weight:800; margin-bottom:10px;">Rocket Payment</div>
+                <input type="text" id="trx-rocket" class="am-input" placeholder="Enter Transaction ID">
+                <div style="font-size:12px; margin-bottom:10px;">Send Money to: <b id="rocket-num-display">Loading...</b> <button class="am-copy-btn" onclick="window.copyToClipboard('rocket-num-display')">Copy</button></div>
+            </div>
+            <div id="content-nagad" class="am-box" style="display:none;">
+                <div style="font-weight:800; margin-bottom:10px;">Nagad Payment</div>
+                <input type="text" id="trx-nagad" class="am-input" placeholder="Enter Transaction ID">
+                <div style="font-size:12px; margin-bottom:10px;">Send Money to: <b id="nagad-num-display">Loading...</b> <button class="am-copy-btn" onclick="window.copyToClipboard('nagad-num-display')">Copy</button></div>
+            </div>
+
+            <button class="am-verify-btn" onclick="window.triggerVerify()">VERIFY</button>
+        </section>
+
+        <!-- WITHDRAW VIEW -->
+        <section id="withdraw-view" class="app-section">
+            <button class="back-nav" onclick="window.navigateSub('wallet')">
+                <i class="fa-solid fa-arrow-left"></i> Withdraw Money
+            </button>
+
+            <div class="am-box" style="text-align:center;">
+                <div style="font-size:12px; color:var(--text-gray); font-weight:600;">Available Balance</div>
+                <div style="font-size:28px; font-weight:800; color:var(--text-dark);">BDT <span id="withdraw-available">0</span></div>
+            </div>
+
+            <div class="am-box">
+                <div class="method-grid">
+                    <div class="method-card active" data-method="bkash" onclick="window.selectWithdrawMethod(this, 'bKash')"><img src="https://i.ibb.co.com/qF1xD5xj/image-search-1769091253468.png"><span>bKash</span></div>
+                    <div class="method-card" data-method="nagad" onclick="window.selectWithdrawMethod(this, 'Nagad')"><img src="https://i.ibb.co.com/4gmdTj1f/image-search-1769091285966.png"><span>Nagad</span></div>
+                    <div class="method-card" data-method="rocket" onclick="window.selectWithdrawMethod(this, 'Rocket')"><img src="https://i.ibb.co.com/MDt4TzDf/image-search-1769091463880.png"><span>Rocket</span></div>
+                </div>
+                <input type="hidden" id="withdraw-method" value="bKash">
+                <div class="wd-input-group">
+                    <i class="fas fa-phone-alt" style="color:var(--text-gray);"></i>
+                    <input type="number" id="withdraw-number" placeholder="Mobile Number">
+                </div>
+                <div class="wd-input-group">
+                    <i class="fas fa-coins" style="color:var(--text-gray);"></i>
+                    <input type="number" id="withdraw-amount" placeholder="Amount (Min 100)">
+                </div>
+                <button class="wd-submit-btn" onclick="window.submitWithdraw()">Withdraw Money</button>
+            </div>
+        </section>
+
+        <!-- HISTORY VIEW -->
+        <section id="history-view" class="app-section">
+            <button class="back-nav" onclick="window.navigateSub('wallet')">
+                <i class="fa-solid fa-arrow-left"></i> Transactions
+            </button>
+            <div id="history-list"></div>
+        </section>
+
+        <!-- EDIT PROFILE VIEW -->
+        <section id="edit-profile-view" class="app-section">
+            <button class="back-nav" onclick="window.showTab('profile')">
+                <i class="fa-solid fa-arrow-left"></i> My Profile
+            </button>
+
+            <div class="am-box">
+                <div class="form-group"><label>Username</label><input type="text" id="ep-username" class="am-input" style="margin-bottom:0;"></div>
+                <div class="form-group" style="margin-top:15px;"><label>Email (Locked)</label><input type="email" id="ep-email" class="am-input" style="margin-bottom:0;" disabled></div>
+                <div class="form-group" style="margin-top:15px;"><label>Current Password</label><input type="password" id="ep-pass-cur" class="am-input" style="margin-bottom:0;"></div>
+                <div class="form-group" style="margin-top:15px;"><label>New Password</label><input type="password" id="ep-pass-new" class="am-input" style="margin-bottom:0;"></div>
+                <button class="btn-auth" style="margin-top:15px;" onclick="window.saveProfile()">Update Profile</button>
+            </div>
+        </section>
+
+        <!-- DEVELOPER VIEW (FIXED) -->
+        <section id="developer-view" class="app-section">
+            <button class="back-nav" onclick="window.showTab('profile')">
+                <i class="fa-solid fa-arrow-left"></i> Back
+            </button>
+            <div class="am-box" style="text-align:center; padding:30px 20px;">
+                <div style="width:80px; height:80px; background:#0f766e; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px; font-size:30px; color:#fff;">
+                    <i class="fas fa-code"></i>
+                </div>
+                <h2 style="font-size:22px; font-weight:800; color:var(--text-dark);">Developer Iasan</h2>
+                <p style="color:var(--text-gray); font-size:14px; margin-top:10px; line-height:1.5;">
+                    টুর্নামেন্ট অ্যাপ বিক্রি হচ্ছে।<br>
+                    আমরা তৈরি করে দিচ্ছি আপনার নিজস্ব Android Tournament App এবং Website Tournament System।
+                </p>
+                <div style="margin-top:20px; text-align:left; background:rgba(255,255,255,.05); padding:15px; border-radius:12px;">
+                    <p style="font-size:13px; margin-bottom:8px;"><i class="fas fa-check-circle" style="color:#10b981; margin-right:8px;"></i> Automatic Payment System</p>
+                    <p style="font-size:13px; margin-bottom:8px;"><i class="fas fa-check-circle" style="color:#10b981; margin-right:8px;"></i> Admin System</p>
+                    <p style="font-size:13px; margin-bottom:8px;"><i class="fas fa-check-circle" style="color:#10b981; margin-right:8px;"></i> Moderator Panel</p>
+                    <p style="font-size:13px;"><i class="fas fa-check-circle" style="color:#10b981; margin-right:8px;"></i> সম্পূর্ণ কাস্টম ডিজাইন</p>
+                </div>
+                <div style="margin-top:20px; font-weight:800; color: var(--kx-neon);">💰 শুরু মাত্র ১,০০০ টাকা থেকে!</div>
+                <a href="https://wa.me/+8801819441618" target="_blank" style="display:inline-block; margin-top:15px; background:#25D366; color:#fff; padding:12px 30px; border-radius:12px; text-decoration:none; font-weight:700;">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+            </div>
+        </section>
+
+        <!-- JOIN MATCH VIEW (Screenshot 1) -->
+        <section id="join-match-view" class="app-section" style="padding-bottom:100px;">
+            <button class="back-nav" onclick="window.closeJoinPage()">
+                <i class="fa-solid fa-arrow-left"></i> Match Joining
+            </button>
+
+            <div class="join-card">
+                <div class="join-match-title" id="join-page-title">Match Name</div>
+                <div class="join-meta" id="join-page-meta">Time</div>
+                
+                <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                    <span style="background:#fef3c7; color:#b45309; padding:4px 10px; border-radius:10px; font-size:12px; font-weight:700;">Fee: ৳<span id="join-page-fee">0</span></span>
+                    <span style="background:#fee2e2; color:#b91c1c; padding:4px 10px; border-radius:10px; font-size:12px; font-weight:700;">Kill: ৳0</span>
+                    <span style="background:#f3e8ff; color:#7c3aed; padding:4px 10px; border-radius:10px; font-size:12px; font-weight:700;">Prize: ৳0</span>
+                </div>
+
+                <div style="text-align:center; font-weight:700; margin-bottom:15px; color:var(--text-dark);" id="join-page-type">Solo</div>
+                
+                <div id="join-inputs-container"></div>
+            </div>
+            
+            <button class="join-btn-full" onclick="window.confirmJoin()">Join Now</button>
+        </section>
+
+        <!-- BOTTOM NAVIGATION -->
+        <nav class="bottom-nav">
+            <div class="nav-items">
+                <button class="nav-item active" onclick="window.showTab('home')" id="nav-home">
+                    <i class="fa-solid fa-house"></i><span>Home</span>
+                </button>
+                <button class="nav-item" onclick="window.showTab('mymatches')" id="nav-mymatches">
+                    <i class="fa-solid fa-gamepad"></i><span>My Match</span>
+                </button>
+                <button class="nav-item" onclick="window.showTab('profile')" id="nav-profile">
+                    <i class="fa-regular fa-circle-user"></i><span>Profile</span>
+                </button>
+            </div>
+        </nav>
+
+    </div>
+
+    <!-- MODALS -->
+    <div id="room-modal" class="modal">
+        <div class="modal-box">
+            <div class="popup-close-btn" onclick="document.getElementById('room-modal').classList.remove('active')">✕</div>
+            <div class="popup-title" style="text-align:center; margin-bottom:15px;">ROOM DETAILS</div>
+            <div style="text-align:center; margin-bottom:15px;">
+                <div style="font-size:12px; color:var(--text-gray);">Room ID</div>
+                <div style="font-size:20px; font-weight:900; color:var(--text-dark);" id="popup-room-id">--</div>
+                <button class="am-copy-btn" onclick="window.copyToClipboard('popup-room-id')">Copy</button>
+            </div>
+            <div style="text-align:center;">
+                <div style="font-size:12px; color:var(--text-gray);">Password</div>
+                <div style="font-size:20px; font-weight:900; color:var(--text-dark);" id="popup-room-pass">--</div>
+                <button class="am-copy-btn" onclick="window.copyToClipboard('popup-room-pass')">Copy</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+/* KHELASTRIX official animated logo (brand/Khelastrix_Animated_Logo.svg), embedded unchanged as a data URI.
+   Rendered through <img>, so its own CSS animations (pulse, float, shine, orbit, twinkle) and its
+   prefers-reduced-motion rule work as designed, and ids/classes never clash with the page. */
+(function () {
+  var SRC = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIgogICAgIHdpZHRoPSIxMDI0IiBoZWlnaHQ9IjEwMjQiIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiIHJvbGU9ImltZyIKICAgICBhcmlhLWxhYmVsbGVkYnk9InRpdGxlIGRlc2MiPgogIDx0aXRsZSBpZD0idGl0bGUiPktoZWxhc3RyaXgg4oCUIFRvdXJuYW1lbnQgR2FtaW5nIExvZ288L3RpdGxlPgogIDxkZXNjIGlkPSJkZXNjIj5BbiBhbmltYXRlZCBlc3BvcnRzIHNoaWVsZCBsb2dvIHdpdGggYSBnb2xkZW4gdHJvcGh5LCBnYW1lIGNvbnRyb2xsZXIsIGFuZCBLaGVsYXN0cml4IHdvcmRtYXJrLjwvZGVzYz4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZ29sZCIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmY2YTgiLz48c3RvcCBvZmZzZXQ9Ii4yOCIgc3RvcC1jb2xvcj0iI2ZmZDMzZCIvPgogICAgICA8c3RvcCBvZmZzZXQ9Ii42MiIgc3RvcC1jb2xvcj0iI2Y1OWIwMCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZmZjBhMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ic2lsdmVyIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIvPjxzdG9wIG9mZnNldD0iLjU1IiBzdG9wLWNvbG9yPSIjYjhjNWRmIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzY4NzU4ZiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0icHVycGxlIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2UwNGNmZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzcwMmJmZiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmx1ZSIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM3Y2U4ZmYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMxNzZiZmYiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8ZmlsdGVyIGlkPSJnbG93IiB4PSItNjAlIiB5PSItNjAlIiB3aWR0aD0iMjIwJSIgaGVpZ2h0PSIyMjAlIj4KICAgICAgPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iOSIgcmVzdWx0PSJibHVyIi8+CiAgICAgIDxmZU1lcmdlPjxmZU1lcmdlTm9kZSBpbj0iYmx1ciIvPjxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPjwvZmVNZXJnZT4KICAgIDwvZmlsdGVyPgogICAgPGZpbHRlciBpZD0ic2hhZG93IiB4PSItMzAlIiB5PSItMzAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIxNjAlIj4KICAgICAgPGZlR2F1c3NpYW5CbHVyIGluPSJTb3VyY2VBbHBoYSIgc3RkRGV2aWF0aW9uPSIxMiIvPgogICAgICA8ZmVPZmZzZXQgZHk9IjEwIi8+PGZlQ29tcG9uZW50VHJhbnNmZXI+PGZlRnVuY0EgdHlwZT0ibGluZWFyIiBzbG9wZT0iLjciLz48L2ZlQ29tcG9uZW50VHJhbnNmZXI+CiAgICAgIDxmZU1lcmdlPjxmZU1lcmdlTm9kZS8+PGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+PC9mZU1lcmdlPgogICAgPC9maWx0ZXI+CiAgICA8Y2xpcFBhdGggaWQ9InNoaWVsZENsaXAiPjxwYXRoIGQ9Ik01MTIgODAgODUwIDE5MCA4MTcgNjEwUTc5MCA4MjAgNTEyIDk0NCAyMzQgODIwIDIwNyA2MTBMMTc0IDE5MFoiLz48L2NsaXBQYXRoPgogIDwvZGVmcz4KCiAgPHN0eWxlPgogICAgLnB1bHNlIHsgYW5pbWF0aW9uOiBwdWxzZSAyLjhzIGVhc2UtaW4tb3V0IGluZmluaXRlOyB0cmFuc2Zvcm0tb3JpZ2luOjUxMnB4IDUwMHB4OyB9CiAgICAuZmxvYXQgeyBhbmltYXRpb246IGZsb2F0IDMuNnMgZWFzZS1pbi1vdXQgaW5maW5pdGU7IHRyYW5zZm9ybS1vcmlnaW46NTEycHggMzMwcHg7IH0KICAgIC5zaGluZSB7IGFuaW1hdGlvbjogc2hpbmUgMy40cyBlYXNlLWluLW91dCBpbmZpbml0ZTsgfQogICAgLm9yYml0IHsgYW5pbWF0aW9uOiBvcmJpdCAxMnMgbGluZWFyIGluZmluaXRlOyB0cmFuc2Zvcm0tb3JpZ2luOjUxMnB4IDUwMHB4OyB9CiAgICAuc3BhcmsgeyBhbmltYXRpb246IHR3aW5rbGUgMS44cyBlYXNlLWluLW91dCBpbmZpbml0ZSBhbHRlcm5hdGU7IH0KICAgIEBrZXlmcmFtZXMgcHVsc2UgeyAwJSwxMDAle29wYWNpdHk6LjU1OyB0cmFuc2Zvcm06c2NhbGUoMSl9IDUwJXtvcGFjaXR5OjE7IHRyYW5zZm9ybTpzY2FsZSgxLjAzNSl9IH0KICAgIEBrZXlmcmFtZXMgZmxvYXQgeyAwJSwxMDAle3RyYW5zZm9ybTp0cmFuc2xhdGVZKDApfSA1MCV7dHJhbnNmb3JtOnRyYW5zbGF0ZVkoLTEycHgpfSB9CiAgICBAa2V5ZnJhbWVzIHNoaW5lIHsgMCV7dHJhbnNmb3JtOnRyYW5zbGF0ZVgoLTI2MHB4KTtvcGFjaXR5OjB9IDIwJXtvcGFjaXR5Oi44fSA1NSUsMTAwJXt0cmFuc2Zvcm06dHJhbnNsYXRlWCg1NjBweCk7b3BhY2l0eTowfSB9CiAgICBAa2V5ZnJhbWVzIG9yYml0IHsgdG97dHJhbnNmb3JtOnJvdGF0ZSgzNjBkZWcpfSB9CiAgICBAa2V5ZnJhbWVzIHR3aW5rbGUgeyBmcm9te29wYWNpdHk6LjI1OyB0cmFuc2Zvcm06c2NhbGUoLjc1KX0gdG97b3BhY2l0eToxOyB0cmFuc2Zvcm06c2NhbGUoMS4yKX0gfQogICAgQG1lZGlhIChwcmVmZXJzLXJlZHVjZWQtbW90aW9uOiByZWR1Y2UpIHsKICAgICAgLnB1bHNlLC5mbG9hdCwuc2hpbmUsLm9yYml0LC5zcGFyayB7IGFuaW1hdGlvbjpub25lICFpbXBvcnRhbnQ7IH0KICAgIH0KICA8L3N0eWxlPgoKICA8cmVjdCB3aWR0aD0iMTAyNCIgaGVpZ2h0PSIxMDI0IiByeD0iMTEwIiBmaWxsPSIjMDcwOTFiIi8+CiAgPGNpcmNsZSBjeD0iNTEyIiBjeT0iNDgwIiByPSIzOTAiIGZpbGw9IiMyMTEwNGEiIG9wYWNpdHk9Ii40NSIgZmlsdGVyPSJ1cmwoI2dsb3cpIiBjbGFzcz0icHVsc2UiLz4KICA8ZyBjbGFzcz0ib3JiaXQiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNwdXJwbGUpIiBvcGFjaXR5PSIuNjUiPgogICAgPGVsbGlwc2UgY3g9IjUxMiIgY3k9IjUwMCIgcng9IjQ0NSIgcnk9IjMwMCIgc3Ryb2tlLXdpZHRoPSI1IiBzdHJva2UtZGFzaGFycmF5PSIyNCAyMiIvPgogICAgPGVsbGlwc2UgY3g9IjUxMiIgY3k9IjUwMCIgcng9IjQwMCIgcnk9IjM0NSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtZGFzaGFycmF5PSI0IDI0Ii8+CiAgPC9nPgogIDxnIGNsYXNzPSJzcGFyayIgZmlsbD0iI2ZmZTM2YiI+CiAgICA8cGF0aCBkPSJNMTUwIDMzMGw5IDI1IDI1IDktMjUgOS05IDI1LTktMjUtMjUtOSAyNS05eiIvPgogICAgPHBhdGggZD0iTTg2NSAzMDBsNyAxOSAxOSA3LTE5IDctNyAxOS03LTE5LTE5LTcgMTktN3oiLz4KICAgIDxwYXRoIGQ9Ik04MzUgNzAwbDYgMTYgMTYgNi0xNiA2LTYgMTYtNi0xNi0xNi02IDE2LTZ6Ii8+CiAgICA8Y2lyY2xlIGN4PSIyMzUiIGN5PSI1NzAiIHI9IjYiLz48Y2lyY2xlIGN4PSI3ODUiIGN5PSI1MjAiIHI9IjUiLz4KICA8L2c+CgogIDwhLS0gU2hpZWxkIC0tPgogIDxwYXRoIGQ9Ik01MTIgNzUgODU4IDE4OCA4MjMgNjIyUTc5NSA4MzAgNTEyIDk1NSAyMjkgODMwIDIwMSA2MjJMMTY2IDE4OFoiCiAgICAgICAgZmlsbD0iIzBkMTAyYiIgc3Ryb2tlPSJ1cmwoI3B1cnBsZSkiIHN0cm9rZS13aWR0aD0iMTgiIGZpbHRlcj0idXJsKCNzaGFkb3cpIi8+CiAgPHBhdGggZD0iTTUxMiAxMDUgODI1IDIwNyA3OTMgNjExUTc2NyA3OTQgNTEyIDkwOCAyNTcgNzk0IDIzMSA2MTFMMTk5IDIwN1oiCiAgICAgICAgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2dvbGQpIiBzdHJva2Utd2lkdGg9IjgiLz4KICA8cGF0aCBkPSJNNTEyIDEyOCA3OTUgMjIwIDc2NyA2MDBRNzQzIDc2NCA1MTIgODY3IDI4MSA3NjQgMjU3IDYwMEwyMjkgMjIwWiIKICAgICAgICBmaWxsPSIjMTExNzM1IiBzdHJva2U9IiMzZTJhODMiIHN0cm9rZS13aWR0aD0iMyIvPgoKICA8IS0tIFRyb3BoeSBhbmQgY29udHJvbGxlciAtLT4KICA8ZyBjbGFzcz0iZmxvYXQiIGZpbHRlcj0idXJsKCNzaGFkb3cpIj4KICAgIDxwYXRoIGQ9Ik0zOTIgMTk1aDI0MHY2NmMwIDExMy01MSAxNzEtMTIwIDE3MXMtMTIwLTU4LTEyMC0xNzF6IgogICAgICAgICAgZmlsbD0idXJsKCNnb2xkKSIgc3Ryb2tlPSIjZmZmMGEwIiBzdHJva2Utd2lkdGg9IjgiLz4KICAgIDxwYXRoIGQ9Ik0zOTIgMjIwaC03NWMtNSA3OCAyNiAxMjcgMTA0IDEzN002MzIgMjIwaDc1YzUgNzgtMjYgMTI3LTEwNCAxMzciCiAgICAgICAgICBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZ29sZCkiIHN0cm9rZS13aWR0aD0iMjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPHBhdGggZD0iTTUxMiAyNDJsMTcgMzYgNDAgNi0yOSAyOCA3IDQwLTM1LTE5LTM1IDE5IDctNDAtMjktMjggNDAtNnoiCiAgICAgICAgICBmaWxsPSIjZmZmM2ExIiBzdHJva2U9IiNkODg3MDAiIHN0cm9rZS13aWR0aD0iNSIvPgogICAgPHBhdGggZD0iTTQ3MCA0MzVoODR2NDJoLTg0eiIgZmlsbD0idXJsKCNnb2xkKSIvPgogICAgPHBhdGggZD0iTTQzMCA0NzdoMTY0djI0SDQzMHoiIHJ4PSI4IiBmaWxsPSJ1cmwoI2dvbGQpIi8+CiAgPC9nPgoKICA8ZyBmaWx0ZXI9InVybCgjc2hhZG93KSI+CiAgICA8cGF0aCBkPSJNMzAwIDUyNVEzMTAgNDc1IDM3NSA0NzVoMjc0cTY1IDAgNzUgNTBsMzIgMTAzcTEwIDQyLTM1IDQyaC04OGwtNDQtMzdINDE1bC00NCAzN2gtODhxLTQ1IDAtMzUtNDJ6IgogICAgICAgICAgZmlsbD0iIzE1MWIzNyIgc3Ryb2tlPSJ1cmwoI3NpbHZlcikiIHN0cm9rZS13aWR0aD0iMTAiLz4KICAgIDxwYXRoIGQ9Ik0zNzAgNTQ4djc4TTMzMSA1ODdoNzgiIHN0cm9rZT0idXJsKCNzaWx2ZXIpIiBzdHJva2Utd2lkdGg9IjE4IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxjaXJjbGUgY3g9IjY4MSIgY3k9IjU1OCIgcj0iMTciIGZpbGw9IiNmZjRiNjciLz4KICAgIDxjaXJjbGUgY3g9IjcyNCIgY3k9IjU4OSIgcj0iMTciIGZpbGw9IiNmZmQzM2QiLz4KICAgIDxjaXJjbGUgY3g9IjYzOCIgY3k9IjU4OSIgcj0iMTciIGZpbGw9IiMzNWQ4ZmYiLz4KICAgIDxjaXJjbGUgY3g9IjY4MSIgY3k9IjYyMCIgcj0iMTciIGZpbGw9IiM3YmZmNzMiLz4KICAgIDxjaXJjbGUgY3g9IjQ1NyIgY3k9IjU5MCIgcj0iMjgiIGZpbGw9IiMwYjEwMjkiIHN0cm9rZT0idXJsKCNibHVlKSIgc3Ryb2tlLXdpZHRoPSI5Ii8+CiAgICA8Y2lyY2xlIGN4PSI1NjciIGN5PSI1OTAiIHI9IjI4IiBmaWxsPSIjMGIxMDI5IiBzdHJva2U9InVybCgjYmx1ZSkiIHN0cm9rZS13aWR0aD0iOSIvPgogICAgPHRleHQgeD0iNTEyIiB5PSI1NzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ4IiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjZmZmIj5LPC90ZXh0PgogIDwvZz4KCiAgPCEtLSBXb3JkbWFyayBwYW5lbCAtLT4KICA8cGF0aCBkPSJNMTMwIDY3NSAxOTAgNjM1SDgzNGw2MCA0MC0yNiAxNDVIMTU2eiIgZmlsbD0iIzA1MDcxMyIgc3Ryb2tlPSJ1cmwoI3B1cnBsZSkiIHN0cm9rZS13aWR0aD0iMTAiIGZpbHRlcj0idXJsKCNzaGFkb3cpIi8+CiAgPHBhdGggZD0iTTE2MCA2NzVIODY0IiBzdHJva2U9InVybCgjZ29sZCkiIHN0cm9rZS13aWR0aD0iNyIvPgogIDx0ZXh0IHg9IjUxMiIgeT0iNzY1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwgQmxhY2ssIEFyaWFsLCBzYW5zLXNlcmlmIgogICAgICAgIGZvbnQtc2l6ZT0iMTAwIiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTUiIHBhaW50LW9yZGVyPSJzdHJva2UiCiAgICAgICAgc3Ryb2tlPSIjMDgwODE3IiBzdHJva2Utd2lkdGg9IjE4IiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4KICAgIDx0c3BhbiBmaWxsPSJ1cmwoI3NpbHZlcikiPktoZWxhPC90c3Bhbj48dHNwYW4gZmlsbD0idXJsKCNnb2xkKSI+c3RyaXg8L3RzcGFuPgogIDwvdGV4dD4KICA8cGF0aCBkPSJNMjM1IDgwMEg3ODkiIHN0cm9rZT0idXJsKCNnb2xkKSIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8ZyBmaWxsPSJ1cmwoI2dvbGQpIj4KICAgIDxwYXRoIGQ9Ik01MTIgODE1bDEwIDIwIDIyIDMtMTYgMTUgNCAyMi0yMC0xMS0yMCAxMSA0LTIyLTE2LTE1IDIyLTN6Ii8+CiAgICA8cGF0aCBkPSJNNDMwIDgyNGw2IDEyIDEzIDItMTAgOSAyIDEzLTExLTYtMTEgNiAyLTEzLTEwLTkgMTMtMnoiLz4KICAgIDxwYXRoIGQ9Ik01OTQgODI0bDYgMTIgMTMgMi0xMCA5IDIgMTMtMTEtNi0xMSA2IDItMTMtMTAtOSAxMy0yeiIvPgogIDwvZz4KICA8dGV4dCB4PSI1MTIiIHk9Ijg5NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSIyNSIgZm9udC13ZWlnaHQ9IjcwMCIgbGV0dGVyLXNwYWNpbmc9IjgiIGZpbGw9IiNkOWRlZjciPlRPVVJOQU1FTlQgQVJFTkE8L3RleHQ+CgogIDwhLS0gTW92aW5nIGxpZ2h0IHN3ZWVwIGFjcm9zcyB0aGUgd29yZG1hcmsgLS0+CiAgPGcgY2xpcC1wYXRoPSJ1cmwoI3NoaWVsZENsaXApIiBwb2ludGVyLWV2ZW50cz0ibm9uZSI+CiAgICA8cmVjdCBjbGFzcz0ic2hpbmUiIHg9IjI0NSIgeT0iNjYwIiB3aWR0aD0iMTEwIiBoZWlnaHQ9IjE5MCIKICAgICAgICAgIHRyYW5zZm9ybT0ic2tld1goLTIyKSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjAiLz4KICA8L2c+Cjwvc3ZnPgo=';
+  var FALLBACK = 'brand/logo-512.jpg'; /* static fallback if animated SVG cannot render */
+  window.KX_LOGO_SRC = SRC;
+  document.querySelectorAll('[data-kx-logo]').forEach(function (el) {
+    if (el.firstChild) return;
+    var size = parseInt(el.getAttribute('data-kx-logo'), 10) || 64;
+    var img = new Image();
+    img.width = size; img.height = size; img.alt = 'Khelastrix logo';
+    img.decoding = 'async'; img.draggable = false;
+    img.onerror = function () { img.onerror = null; img.src = FALLBACK; };
+    img.src = SRC;
+    el.appendChild(img);
+  });
+})();
+</script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue, push, update, get, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAwxezooisgMc-p5IKKjQcdooULWSE1XQ0",
+            authDomain: "ludofire-arena.firebaseapp.com",
+            databaseURL: "https://ludofire-arena-default-rtdb.firebaseio.com",
+            projectId: "ludofire-arena",
+            storageBucket: "ludofire-arena.firebasestorage.app",
+            messagingSenderId: "894821053627",
+            appId: "1:894821053627:web:45faa257d425cb6aff659e",
+            measurementId: "G-NZZJ61PZZC"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        // ---- security helpers ----
+        const esc = (v) => String(v ?? '').replace(/[&<>"'`]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c]));
+        window.esc = esc;
+        const fns = getFunctions(app, 'asia-southeast1');
+        const call = (name, data) => httpsCallable(fns, name)(data || {}).then((r) => r.data);
+        const errMsg = (e) => (e && e.message ? String(e.message).replace(/^(functions\/)?[\w-]+:\s*/, '') : 'Something went wrong');
+        // never leave a blank screen: show the real error
+        window.addEventListener('error', (e) => showFatal(e.message));
+        window.addEventListener('unhandledrejection', (e) => { if (!(e.reason && e.reason.code)) showFatal(e.reason && e.reason.message); });
+        function showFatal(msg) {
+            if (document.getElementById('fatal-box')) return;
+            const d = document.createElement('div'); d.id = 'fatal-box';
+            d.style.cssText = 'position:fixed;left:10px;right:10px;bottom:10px;z-index:99999;background:#111827;color:#fff;padding:12px 14px;border-radius:12px;font:13px/1.5 sans-serif';
+            d.textContent = 'Problem: ' + (msg || 'unknown error') + ' — check internet, then reload.';
+            d.onclick = () => d.remove(); document.body.appendChild(d);
+        }
+
+        const auth = getAuth(app);
+
+        let currentUser = null, registering = false;
+        let depositBal = 0, winningBal = 0;
+        let activeCategories = {};
+        let rawMatches = [];
+        let currentActiveCategory = null;
+        let userJoinedMatches = [];
+        let currentJoinId = null, currentEntryFee = 0;
+        let currentMatchFilter = 'Upcoming';
+        let supportLink = "";
+        let currentPayMethod = 'bkash';
+        let allParticipants = {};
+
+        window.emailLogin = emailLogin;
+        window.emailRegister = emailRegister;
+        window.handleLogout = handleLogout;
+        window.toggleAuthMode = toggleAuthMode;
+        window.copyToClipboard = copyToClipboard;
+        window.openSupport = openSupport;
+        window.switchPayTab = switchPayTab;
+        window.submitWithdraw = submitWithdraw;
+        window.saveProfile = saveProfile;
+        window.confirmJoin = confirmJoin;
+        window.prepJoin = prepJoin;
+        window.checkRoom = checkRoom;
+        window.showTab = showTab;
+        window.navigateSub = navigateSub;
+        window.openCategory = openCategory;
+        window.filterMatchTab = filterMatchTab;
+        window.selectWithdrawMethod = selectWithdrawMethod;
+        window.triggerVerify = triggerVerify;
+        window.openMatchDetails = openMatchDetails;
+        window.closeJoinPage = closeJoinPage;
+
+        window.onload = () => { 
+            initData(); 
+            let progress = 0;
+            const progressBar = document.getElementById('splash-progress');
+            const interval = setInterval(() => {
+                progress += 9;
+                progressBar.style.width = progress + '%';
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        const splash = document.getElementById('app-splash');
+                        splash.style.opacity = '0';
+                        setTimeout(() => splash.style.display = 'none', 500);
+                    }, 120);
+                }
+            }, 24);
+        };
+
+        function initData() {
+            onValue(ref(db, 'categories'), s => {
+                const d = s.val();
+                if(d) {
+                    activeCategories = d;
+                    const c = document.getElementById('dynamic-category-list');
+                    c.innerHTML = "";
+                    Object.entries(d).forEach(([k,v]) => {
+                        c.innerHTML += `
+                        <div class="cat-card" onclick="window.openCategory('${k}')">
+                             <img src="${esc(v.img)}" class="cat-card-img">
+                             <div class="cat-card-info">
+                                 <div class="cat-card-title">${esc(v.name)}</div>
+                                 <div class="cat-card-count" id="count-${k}">0 Matches</div>
+                             </div>
+                        </div>`;
+                    });
+                    updateCounts();
+                }
+            });
+
+            onValue(ref(db, 'matches'), s => {
+                rawMatches = [];
+                const d = s.val();
+                if(d) Object.entries(d).forEach(([k,v]) => { rawMatches.push({dbKey:k, ...v}); });
+                updateCounts();
+                if(document.getElementById('matches-view').classList.contains('active')) filterMatchTab(currentMatchFilter);
+                if(document.getElementById('tab-mymatches-view').classList.contains('active')) loadMyMatches();
+            });
+
+            onValue(ref(db, 'match_participants'), s => {
+                allParticipants = s.val() || {}; 
+                calculateJoinedMatches();
+            });
+            
+            onValue(ref(db, 'app_settings'), s => {
+                const d = s.val();
+                if(d) {
+                    if(d.app_name) {
+                        
+                        document.querySelector('.brand-name').innerText = d.app_name;
+                    }
+                    
+                    if(d.notice) document.getElementById('dynamic-notice').innerText = d.notice;
+                    if(d.bkash_number) document.getElementById('bkash-num-display').innerText = d.bkash_number;
+                    if(d.nagad_number) document.getElementById('nagad-num-display').innerText = d.nagad_number;
+                    if(d.rocket_number) document.getElementById('rocket-num-display').innerText = d.rocket_number;
+                    supportLink = d.support_link;
+
+                    if(d.banners) {
+                        const w = document.getElementById('banner-slider-wrapper');
+                        const dots = document.getElementById('slider-dots');
+                        w.innerHTML = ""; dots.innerHTML = "";
+                        const banners = Object.values(d.banners);
+                        if(banners.length > 0) {
+                            banners.forEach((b, i) => {
+                                w.innerHTML += `<div class="slide"><img src="${esc(b.img)}"></div>`;
+                                dots.innerHTML += `<div class="dot ${i===0?'active':''}"></div>`;
+                            });
+                            initSlider();
+                        }
+                    }
+                }
+            });
+            startTimers();
+        }
+
+        function calculateJoinedMatches() {
+            userJoinedMatches = [];
+            if(allParticipants && currentUser) {
+                Object.keys(allParticipants).forEach(matchKey => {
+                    const parts = Object.values(allParticipants[matchKey]);
+                    if(parts.some(p => p.joinedBy === currentUser.uid)) userJoinedMatches.push(matchKey);
+                });
+            }
+            if(document.getElementById('matches-view').classList.contains('active')) filterMatchTab(currentMatchFilter);
+            if(document.getElementById('tab-mymatches-view').classList.contains('active')) loadMyMatches();
+        }
+
+        function updateCounts() {
+             Object.keys(activeCategories).forEach(k => {
+                 const n = rawMatches.filter(m => m.categoryId === k && m.status !== 'Finished').length;
+                 const el = document.getElementById(`count-${k}`);
+                 if(el) el.innerText = `${n} Matches Found`;
+             });
+        }
+        
+        let slideIndex = 0; let slideInterval;
+        function initSlider() {
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.dot');
+            if(slides.length === 0) return;
+            if(slideInterval) clearInterval(slideInterval);
+            slideInterval = setInterval(() => {
+                slideIndex = (slideIndex + 1) % slides.length;
+                document.getElementById('banner-slider-wrapper').style.transform = `translateX(-${slideIndex * 100}%)`;
+                dots.forEach(d => d.classList.remove('active'));
+                if(dots[slideIndex]) dots[slideIndex].classList.add('active');
+            }, 3000);
+        }
+
+        function toggleLoader(show) {
+            const l = document.getElementById('global-loader');
+            if(show) l.classList.add('active'); else l.classList.remove('active');
+        }
+
+        function showTab(t) {
+            toggleLoader(true);
+            document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
+            const navItem = document.getElementById(`nav-${t}`);
+            if(navItem) navItem.classList.add('active');
+            setTimeout(() => {
+                document.querySelectorAll('.app-section').forEach(e => e.classList.remove('active'));
+                const target = document.getElementById(`tab-${t}-view`);
+                if(target) target.classList.add('active');
+                if(['home', 'mymatches', 'profile'].includes(t)) {
+                    document.body.classList.remove('sub-page');
+                    document.querySelector('.bottom-nav').classList.remove('hidden');
+                }
+                if(t === 'mymatches') loadMyMatches();
+                toggleLoader(false);
+            }, 300);
+        }
+
+        function navigateSub(t) {
+            toggleLoader(true);
+            setTimeout(() => {
+                document.querySelectorAll('.app-section').forEach(e => e.classList.remove('active'));
+                document.body.classList.add('sub-page');
+                document.querySelector('.bottom-nav').classList.add('hidden');
+                const targetMap = {
+                    'wallet': 'wallet-view', 'add-money': 'add-money-view', 'withdraw': 'withdraw-view',
+                    'history': 'history-view', 'edit-profile': 'edit-profile-view', 'developer': 'developer-view'
+                };
+                const targetId = targetMap[t];
+                if(targetId) document.getElementById(targetId).classList.add('active');
+                
+                if(t==='wallet' && currentUser) {
+                    document.getElementById('withdraw-available-wallet').innerText = winningBal;
+                    document.getElementById('deposit-available-wallet').innerText = depositBal;
+                } else if(t==='withdraw' && currentUser) {
+                    document.getElementById('withdraw-available').innerText = winningBal;
+                } else if(t==='history') loadHistory();
+                else if(t==='edit-profile' && currentUser) {
+                     document.getElementById('ep-username').value = currentUser.displayName || '';
+                     document.getElementById('ep-email').value = currentUser.email || '';
+                }
+                toggleLoader(false);
+            }, 300);
+        }
+
+        function selectWithdrawMethod(el, method) {
+            document.querySelectorAll('.method-card').forEach(e => e.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('withdraw-method').value = method;
+        }
+
+        function openCategory(cid) {
+            currentActiveCategory = cid;
+            document.querySelectorAll('.app-section').forEach(e => e.classList.remove('active'));
+            document.getElementById('matches-view').classList.add('active');
+            document.body.classList.add('sub-page');
+            document.querySelector('.bottom-nav').classList.add('hidden');
+            filterMatchTab('Upcoming');
+        }
+
+        function filterMatchTab(status) {
+            currentMatchFilter = status;
+            document.querySelectorAll('.m-tab').forEach(e => e.classList.remove('active'));
+            const tab = document.getElementById('mt-'+status);
+            if(tab) tab.classList.add('active');
+            const c = document.getElementById('matches-container');
+            c.innerHTML = "";
+            let m = rawMatches.filter(x => x.categoryId === currentActiveCategory && x.status === status);
+            
+            if(m.length === 0) c.innerHTML = `<div class='empty-msg'>No Matches Found</div>`;
+            else m.forEach(x => c.innerHTML += createMatchCardHTML(x, (status==='Finished' ? 'result' : 'play')));
+        }
+
+        function loadMyMatches() {
+             const c = document.getElementById('mymatches-container');
+             if(!c) return;
+             c.innerHTML = "";
+             if(!currentUser) { c.innerHTML = "<div class='empty-msg'>Login to see matches</div>"; return; }
+             const m = rawMatches.filter(x => userJoinedMatches.includes(x.dbKey));
+             if(m.length===0) c.innerHTML = "<div class='empty-msg'>No joined matches</div>";
+             else m.forEach(x => c.innerHTML += createMatchCardHTML(x, 'joined'));
+        }
+
+        function createMatchCardHTML(m, type) {
+            const joined = parseInt(m.joined) || 0;
+            const total = parseInt(m.total) || 48;
+            const perc = Math.min((joined/total)*100, 100);
+            const isJoined = userJoinedMatches.includes(m.dbKey);
+            const catImg = activeCategories[m.categoryId] ? activeCategories[m.categoryId].img : '';
+            
+            let btnJoinHTML = '';
+            if (type === 'play') {
+                btnJoinHTML = isJoined ? `<button class="btn-join-main disabled">JOINED</button>` : `<button class="btn-join-main" onclick="event.stopPropagation(); window.prepJoin('${m.dbKey}', '${esc(m.type)}', ${m.entry}, '${m.dbKey}', '${esc(m.title)}')">Join Now</button>`;
+            } else if (type === 'joined') {
+                 btnJoinHTML = `<button class="btn-join-main disabled">JOINED</button>`;
+            } else {
+                 btnJoinHTML = `<button class="btn-join-main result-btn">View Result</button>`;
+            }
+
+            const shortId = m.dbKey ? m.dbKey.slice(-4).toUpperCase() : '----';
+
+            return `
+            <div class="match-card" onclick="window.openMatchDetails('${m.dbKey}')">
+                <div class="banner-box">
+                    <img src="${catImg}" alt="Match Banner">
+                    <div class="banner-overlay"></div>
+                    <div class="badge-map">${m.map || 'Bermuda'}</div>
+                    <div class="badge-id">ID: ${shortId}</div>
+                    ${type !== 'result' ? `<div class="timer-badge match-countdown" data-time="${m.timestamp}"><i class="far fa-clock"></i> <span class="timer-display">Loading...</span></div>` : ''}
+                    <h3 class="banner-title">${esc(m.title)}</h3>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-item"><i class="fa-solid fa-sack-dollar"></i><span class="stat-lbl">Prize Pool</span><span class="stat-val">৳${m.total_prize || 0}</span></div>
+                    <div class="stat-item"><i class="fa-solid fa-skull"></i><span class="stat-lbl">Per Kill</span><span class="stat-val">৳${m.per_kill || 0}</span></div>
+                    <div class="stat-item"><i class="fa-solid fa-ticket"></i><span class="stat-lbl">Entry</span><span class="stat-val">৳${m.entry || 0}</span></div>
+                    <div class="stat-item"><i class="fa-solid fa-users"></i><span class="stat-lbl">Type</span><span class="stat-val">${m.type || 'Solo'}</span></div>
+                </div>
+
+                <div class="action-container">
+                    ${type !== 'result' ? `
+                    <div class="spots-left">Only ${Math.max(0, total-joined)} Spots Left</div>
+                    <div class="bar-bg" style="width:100%"><div class="bar-fill" style="width:${perc}%"></div></div>
+                    ` : `<div class="spots-left">Match Finished</div>`}
+                    ${btnJoinHTML}
+                </div>
+
+                <div class="bottom-grid">
+                    <div class="btn-bottom"><i class="fa-solid fa-users"></i> Participants</div>
+                    <div class="btn-bottom" onclick="event.stopPropagation(); window.checkRoom('${m.dbKey}')"><i class="fas fa-key"></i> Id & Password</div>
+                </div>
+            </div>`;
+        }
+
+        function openMatchDetails(key) {
+            const m = rawMatches.find(x => x.dbKey === key);
+            if(!m) return;
+            // Since we didn't create a separate match details view in this light theme, 
+            // we'll just show a placeholder or you can route to join if not joined.
+            Swal.fire({ title: m.title, text: `Map: ${esc(m.map)} | Type: ${esc(m.type)}`, icon: 'info' });
+        }
+
+        function checkRoom(key) {
+             if(!currentUser) return;
+             const m = rawMatches.find(x => x.dbKey === key);
+             if(!m) return;
+             const isJoined = userJoinedMatches.includes(key);
+             if(isJoined) {
+                 get(ref(db, 'match_secrets/' + key)).then(s => {
+                     const r = s.val();
+                     if(!r || !r.room_id) Swal.fire({ icon: 'info', title: 'Wait', text: 'Room details will be shared before match starts.', confirmButtonText: 'OK' });
+                     else {
+                         document.getElementById('popup-room-id').innerText = r.room_id;
+                         document.getElementById('popup-room-pass').innerText = r.room_pass || '';
+                         document.getElementById('room-modal').classList.add('active');
+                     }
+                 }).catch(() => Swal.fire({ icon: 'info', title: 'Wait', text: 'Room details will be shared before match starts.' }));
+             } else {
+                 Swal.fire({ icon: 'warning', title: 'Not Joined', text: 'You have not joined this match.', confirmButtonText: 'OK' });
+             }
+        }
+
+        function prepJoin(id, type, fee, key, title) {
+             if(!currentUser) return;
+             if(userJoinedMatches.includes(id)) return Swal.fire({ icon:'warning', title:'Already Joined' });
+             currentJoinId = id; currentEntryFee = fee;
+             
+             document.getElementById('join-page-title').innerText = title || "Match";
+             document.getElementById('join-page-meta').innerText = "Entry Type: " + type; 
+             document.getElementById('join-page-fee').innerText = fee;
+             
+             const ic = document.getElementById('join-inputs-container');
+             ic.innerHTML = "";
+             let slots = type.toLowerCase().includes('duo') ? 2 : (type.toLowerCase().includes('squad') ? 4 : 1);
+             for(let i=1; i<=slots; i++) ic.innerHTML += `<input type="text" class="join-input p-name" placeholder="Player ${i} Game Name / UID">`;
+             
+             document.querySelectorAll('.app-section').forEach(e => e.classList.remove('active'));
+             document.body.classList.add('sub-page');
+             document.querySelector('.bottom-nav').classList.add('hidden');
+             document.getElementById('join-match-view').classList.add('active');
+        }
+
+        function closeJoinPage() {
+             if(currentActiveCategory) document.getElementById('matches-view').classList.add('active');
+             else { document.getElementById('tab-home-view').classList.add('active'); document.body.classList.remove('sub-page'); document.querySelector('.bottom-nav').classList.remove('hidden'); }
+             document.getElementById('join-match-view').classList.remove('active');
+        }
+
+        async function confirmJoin() {
+             if(userJoinedMatches.includes(currentJoinId)) return Swal.fire({ icon:'warning', title:'Already Joined' });
+             const inps = document.querySelectorAll('.p-name');
+             let names = [];
+             inps.forEach(i => { if(i.value.trim()) names.push(i.value.trim()); });
+             if(names.length !== inps.length) return Swal.fire('Error', "Fill all player names", 'error');
+             const total = currentEntryFee * names.length;
+             if((depositBal + winningBal) < total) return Swal.fire('Error', "Insufficient Balance", 'error');
+             toggleLoader(true);
+             try {
+                 await call('joinMatch', { matchId: currentJoinId, names });
+                 await refreshBalances();
+                 toggleLoader(false);
+                 Swal.fire({ icon: 'success', title: 'Joined!', text: 'You joined the match.', confirmButtonText: 'OK' }).then(() => closeJoinPage());
+             } catch(e) { toggleLoader(false); Swal.fire('Error', errMsg(e), 'error'); }
+        }
+
+        async function refreshBalances() {
+            if (!currentUser) return;
+            const snap = await get(ref(db, 'users/' + currentUser.uid));
+            const d = snap.val();
+            if (d) { depositBal = parseFloat(d.deposit) || 0; winningBal = parseFloat(d.winning) || 0; updateBalanceUI(); }
+        }
+
+        function updateBalanceUI() {
+            document.getElementById('wallet-balance-display').innerText = (depositBal + winningBal).toFixed(2);
+            document.getElementById('withdraw-available').innerText = winningBal;
+            document.getElementById('deposit-available-wallet').innerText = depositBal;
+            document.getElementById('withdraw-available-wallet').innerText = winningBal;
+        }
+
+        function saveProfile() {
+             const n = document.getElementById('ep-username').value;
+             const curP = document.getElementById('ep-pass-cur').value;
+             const newP = document.getElementById('ep-pass-new').value;
+             const promises = [];
+             toggleLoader(true);
+             if(n && !/^[^<>"'`&\\]{2,30}$/.test(n)) { toggleLoader(false); return Swal.fire('Error', 'Invalid username', 'error'); }
+             if(n && n !== currentUser.displayName) promises.push(updateProfile(currentUser, {displayName: n}).then(() => update(ref(db, 'users/'+currentUser.uid), {username: n})));
+             if(newP) {
+                 if(!curP) { toggleLoader(false); return Swal.fire('Error', "Current password required", 'error'); }
+                 const cred = EmailAuthProvider.credential(currentUser.email, curP);
+                 promises.push(reauthenticateWithCredential(currentUser, cred).then(() => updatePassword(currentUser, newP)));
+             }
+             Promise.all(promises).then(() => {
+                 toggleLoader(false); Swal.fire({ icon:'success', title:'Success', text:'Profile Updated' });
+                 document.getElementById('ep-pass-cur').value = ''; document.getElementById('ep-pass-new').value = '';
+             }).catch(e => { toggleLoader(false); Swal.fire('Error', e.message, 'error'); });
+        }
+        
+        // FIXED WITHDRAW FUNCTION
+        async function submitWithdraw() {
+            if (!currentUser) return;
+            const amount = parseFloat(document.getElementById('withdraw-amount').value);
+            const number = document.getElementById('withdraw-number').value.trim();
+            const method = document.getElementById('withdraw-method').value;
+            if (!amount || !number) return Swal.fire('Error', 'Please fill all fields', 'error');
+            if (amount < 100) return Swal.fire('Error', 'Minimum withdraw amount is 100 TK', 'error');
+            if (amount > winningBal) return Swal.fire('Error', 'Insufficient winning balance', 'error');
+            if (!/^01\d{9}$/.test(number)) return Swal.fire('Error', 'Enter a valid 11-digit mobile number', 'error');
+            const r = await Swal.fire({ title: 'Confirm Withdraw', text: `Withdraw ${amount} TK to ${method} (${number})?`, icon: 'question', showCancelButton: true, confirmButtonText: 'Yes, Withdraw' });
+            if (!r.isConfirmed) return;
+            toggleLoader(true);
+            try {
+                await call('requestWithdraw', { amount, number, method });
+                await refreshBalances(); toggleLoader(false);
+                Swal.fire('Success', 'Withdraw request submitted successfully!', 'success').then(() => window.navigateSub('wallet'));
+            } catch (e) { toggleLoader(false); Swal.fire('Error', errMsg(e), 'error'); }
+        }
+
+                function switchPayTab(t) {
+            currentPayMethod = t;
+            document.querySelectorAll('.method-card').forEach(e=>e.classList.remove('active'));
+            document.getElementById(`tab-${t}`).classList.add('active');
+            document.querySelectorAll('.am-box').forEach(e=>e.style.display='none');
+            document.getElementById(`content-${t}`).style.display='block';
+        }
+
+        function triggerVerify() { verifyAutoPay(currentPayMethod); }
+
+        async function verifyAutoPay(method) {
+            if (!currentUser) return;
+            const trxId = document.getElementById(`trx-${method}`).value.trim().toUpperCase();
+            if (!/^[A-Z0-9]{6,20}$/.test(trxId)) return Swal.fire('Warning', 'Enter a valid TrxID', 'warning');
+            toggleLoader(true);
+            try {
+                const r = await call('claimDeposit', { trxId, method });
+                document.getElementById(`trx-${method}`).value = '';
+                await refreshBalances(); toggleLoader(false);
+                Swal.fire('Success', `Added ${r.amount} TK`, 'success').then(() => window.navigateSub('wallet'));
+            } catch (e) { toggleLoader(false); Swal.fire('Error', errMsg(e), 'error'); }
+        }
+
+                function startTimers() {
+            setInterval(() => {
+                document.querySelectorAll('.match-countdown').forEach(e => {
+                     const t = parseInt(e.dataset.time);
+                     const display = e.querySelector('.timer-display') || e;
+                     if(!t || isNaN(t)) return display.innerText = "Time TBA";
+                     const diff = t - new Date().getTime();
+                     if(diff < 0) display.innerText = "Started";
+                     else {
+                         const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                         const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                         display.innerText = `${h}h ${m}m`;
+                     }
+                });
+            }, 1000);
+        }
+
+        onAuthStateChanged(auth, u => {
+            if(u) {
+                currentUser = u;
+                document.getElementById('profile-name').innerText = u.displayName || 'User';
+                document.getElementById('profile-email').innerText = u.email;
+                document.getElementById('auth-view').classList.remove('active');
+                document.getElementById('main-content').classList.add('show');
+                document.querySelector('.bottom-nav').classList.remove('hidden');
+                showTab('home');
+                calculateJoinedMatches();
+                onValue(ref(db, 'users/'+u.uid), s => {
+                    const d = s.val();
+                    if(d) { depositBal = parseFloat(d.deposit) || 0; winningBal = parseFloat(d.winning) || 0; updateBalanceUI(); }
+                    else if(!registering) call('ensureProfile', {}).catch(()=>{});
+                });
+            } else {
+                currentUser = null; userJoinedMatches = [];
+                document.getElementById('main-content').classList.remove('show');
+                document.querySelector('.bottom-nav').classList.add('hidden');
+                document.getElementById('auth-view').classList.add('active');
+                toggleAuthMode('login');
+            }
+        });
+
+        function toggleAuthMode(mode) {
+            if(mode === 'login') {
+                document.getElementById('login-container').style.display = 'flex';
+                document.getElementById('register-container').style.display = 'none';
+                document.querySelectorAll('.auth-tab')[0].classList.add('active'); document.querySelectorAll('.auth-tab')[1].classList.remove('active');
+                document.getElementById('loginForm').classList.add('active'); document.getElementById('registerForm').classList.remove('active');
+            } else {
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('register-container').style.display = 'flex';
+                document.querySelectorAll('.auth-tab')[1].classList.add('active'); document.querySelectorAll('.auth-tab')[0].classList.remove('active');
+                document.getElementById('registerForm').classList.add('active'); document.getElementById('loginForm').classList.remove('active');
+            }
+        }
+
+        function emailLogin() {
+             const e = document.getElementById('login-email').value;
+             const p = document.getElementById('login-pass').value;
+             if(!e || !p) return Swal.fire('Error', 'Fill all fields', 'error');
+             toggleLoader(true);
+             signInWithEmailAndPassword(auth, e, p).then(() => toggleLoader(false)).catch(e => { toggleLoader(false); Swal.fire('Error', e.message, 'error'); });
+        }
+        
+        function emailRegister() {
+             const n = document.getElementById('reg-username').value.trim();
+             const e = document.getElementById('reg-email').value.trim();
+             const ph = document.getElementById('reg-phone').value.trim();
+             const p = document.getElementById('reg-pass').value;
+             if(!n || !e || !ph || !p) return Swal.fire('Error', 'Fill all fields', 'error');
+             if(!/^[^<>"'`&\\]{2,30}$/.test(n)) return Swal.fire('Error', 'Username: 2-30 characters, no < > " \' ` & \\', 'error');
+             if(!/^01\d{9}$/.test(ph)) return Swal.fire('Error', 'Enter a valid 11-digit mobile number', 'error');
+             if(p.length < 8) return Swal.fire('Error', 'Password must be at least 8 characters', 'error');
+             toggleLoader(true); registering = true;
+             createUserWithEmailAndPassword(auth, e, p).then(async (c)=> {
+                 await updateProfile(c.user, {displayName:n});
+                 try { await call('ensureProfile', { username: n, phone: ph }); } catch(_) {}
+                 registering = false; toggleLoader(false);
+             }).catch(e=> { registering = false; toggleLoader(false); Swal.fire('Error', e.message, 'error'); });
+        }
+                function handleLogout() { 
+            Swal.fire({ title: 'Logout?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Yes' }).then((result) => {
+                if (result.isConfirmed) signOut(auth);
+            });
+        }
+
+        function copyToClipboard(id) {
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                Swal.fire({ icon: 'success', title: 'Copied!', timer: 1000, showConfirmButton: false });
+            });
+        }
+
+        // FIXED SUPPORT BUTTON
+        function openSupport() { 
+            if(supportLink && supportLink.startsWith('http')) {
+                window.open(supportLink, '_blank'); 
+            } else {
+                Swal.fire({ icon: 'info', title: 'Support', text: 'Support link is not set by Admin yet.', confirmButtonText: 'OK' });
+            }
+        }
+        
+        function loadHistory() {
+             const l = document.getElementById('history-list');
+             if(!l) return;
+             l.innerHTML = "Loading...";
+             if(!currentUser) return;
+             onValue(ref(db, 'transactions/'+currentUser.uid), s => {
+                 l.innerHTML = "";
+                 const d = s.val();
+                 if(d) {
+                     Object.values(d).reverse().forEach(t => {
+                         l.innerHTML += `
+                         <div class="history-card">
+                             <div>
+                                 <div class="hc-title">${t.type || "Transaction"}</div>
+                                 <div class="hc-date">${esc(t.date)}</div>
+                             </div>
+                             <div class="hc-amount">৳${t.amount || 0}</div>
+                         </div>`;
+                     });
+                 } else l.innerHTML = "<div class='empty-msg'>No Transactions</div>";
+             });
+        }
+
+    </script>
+</body>
+</html>

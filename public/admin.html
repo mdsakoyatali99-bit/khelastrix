@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Khelastrix Admin</title>
+    <meta name="description" content="Khelastrix tournament administration panel.">
+    <meta name="theme-color" content="#07091B">
+    <meta name="application-name" content="Khelastrix">
+    <meta name="apple-mobile-web-app-title" content="Khelastrix">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="brand/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="brand/favicon-16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="brand/apple-touch-icon.png">
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Khelastrix">
+    <meta property="og:title" content="Khelastrix Admin">
+    <meta property="og:description" content="Khelastrix tournament administration panel.">
+    <meta property="og:image" content="https://ludofire-arena.web.app/brand/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Khelastrix logo">
+    <meta property="og:url" content="https://ludofire-arena.web.app/admin.html">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Khelastrix Admin">
+    <meta name="twitter:description" content="Khelastrix tournament administration panel.">
+    <meta name="twitter:image" content="https://ludofire-arena.web.app/brand/og-image.jpg">
+    <meta name="robots" content="noindex,nofollow">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-material-ui/material-ui.min.css" rel="stylesheet">
+
+    <style>
+        /* ========================================
+           ROOT VARIABLES — Light Theme (Screenshot Style)
+           ======================================== */
+        :root {
+            --bg-body: #e3ebfa; /* হালকা নীল ব্যাকগ্রাউন্ড */
+            --bg-card: #ffffff; /* সাদা কার্ড */
+            --primary: var(--primary); /* ডার্ক টিল/গ্রিন */
+            --primary-light: var(--primary-light);
+            --text-dark: #111827;
+            --text-gray: #6b7280;
+            --border: rgba(197,206,223,.16);
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --radius: 20px;
+            --radius-sm: 12px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
+        input, textarea, select { user-select: text !important; }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+            padding-bottom: 80px;
+            min-height: 100vh;
+        }
+
+        /* Glass Header */
+        .admin-header {
+            background: var(--bg-card);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .admin-logo { font-weight: 800; font-size: 18px; display: flex; align-items: center; gap: 10px; color: var(--text-dark); }
+        .admin-logo .logo-icon {
+            width: 36px; height: 36px;
+            background: #000;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; color: #fff;
+        }
+        .header-actions { display: flex; align-items: center; gap: 12px; }
+        .header-btn {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(255,255,255,.06); border: none;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: var(--text-dark); transition: all 0.2s;
+        }
+        .header-btn.danger { background: #fee2e2; color: var(--danger); }
+
+        /* Sections */
+        .section { display: none; padding: 20px 24px; animation: slideUp 0.3s ease; }
+        .section.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Stat Card */
+        .stat-card {
+            background: var(--primary);
+            padding: 24px;
+            border-radius: var(--radius);
+            margin-bottom: 24px;
+            color: #fff;
+            box-shadow: var(--shadow);
+        }
+        .stat-val { font-size: 36px; font-weight: 800; line-height: 1; }
+        .stat-lbl { font-size: 13px; opacity: 0.9; font-weight: 500; margin-top: 6px; }
+
+        /* Dashboard Grid */
+        .grid-section-title { font-size: 13px; color: var(--text-gray); font-weight: 700; margin: 24px 0 14px; text-transform: uppercase; }
+        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .dash-item {
+            background: var(--bg-card);
+            padding: 20px 16px;
+            border-radius: var(--radius);
+            text-align: center;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.2s;
+        }
+        .dash-item:active { transform: scale(0.96); }
+        .dash-icon-box {
+            width: 48px; height: 48px; border-radius: 16px;
+            margin: 0 auto 12px; display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+        }
+        .dash-text { font-size: 14px; font-weight: 700; color: var(--text-dark); }
+        .dash-badge {
+            position: absolute; top: -6px; right: -6px;
+            background: var(--danger); color: #fff;
+            font-size: 10px; font-weight: 800;
+            min-width: 22px; height: 22px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid var(--bg-body);
+        }
+
+        /* List Cards */
+        .list-container { display: flex; flex-direction: column; gap: 14px; }
+        .flat-card {
+            background: var(--bg-card);
+            padding: 18px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        .fc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .fc-title { font-weight: 800; font-size: 16px; color: var(--text-dark); }
+        .fc-tag { font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 700; }
+        .tag-yellow { background: #fef3c7; color: #b45309; }
+        .tag-green { background: #d1fae5; color: #047857; }
+        .tag-blue { background: #dbeafe; color: #1d4ed8; }
+        .tag-danger { background: #fee2e2; color: #b91c1c; }
+
+        .fc-detail { font-size: 13px; color: var(--text-gray); margin-bottom: 6px; display: flex; justify-content: space-between; }
+        .fc-value { color: var(--text-dark); font-weight: 600; }
+        .fc-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+
+        /* Category Row */
+        .cat-card-row { display: flex; align-items: center; gap: 14px; }
+        .cat-img { width: 50px; height: 50px; border-radius: var(--radius-sm); object-fit: cover; background: rgba(255,255,255,.06); }
+        .cat-info { flex: 1; }
+        .cat-actions { display: flex; gap: 8px; }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 16px; border-radius: var(--radius-sm);
+            border: none; font-size: 13px; font-weight: 700;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-danger { background: #fee2e2; color: var(--danger); }
+        .btn-success { background: #d1fae5; color: #047857; }
+
+        /* Inputs */
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 12px; color: var(--text-gray); margin-bottom: 6px; font-weight: 600; }
+        .form-input {
+            width: 100%; background: rgba(255,255,255,.06);
+            border: 1px solid var(--border);
+            color: var(--text-dark); padding: 14px 16px;
+            border-radius: var(--radius-sm); outline: none; font-size: 14px;
+        }
+        .form-input:focus { border-color: var(--kx-neon); background: var(--bg-card); }
+
+        /* Back Nav */
+        .back-nav {
+            display: inline-flex; align-items: center; gap: 10px;
+            color: var(--text-dark); font-size: 16px; font-weight: 700;
+            margin-bottom: 20px; cursor: pointer; background: none; border: none;
+        }
+
+        /* FAB */
+        .fab {
+            position: fixed; bottom: 30px; right: 30px;
+            width: 60px; height: 60px; background: var(--primary);
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 24px; color: #fff; box-shadow: 0 8px 20px rgba(15, 118, 110, 0.3);
+            cursor: pointer; z-index: 90; border: none;
+        }
+
+        /* Search Box */
+        .search-box { position: relative; margin-bottom: 20px; }
+        .search-box i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-gray); }
+        .search-input { padding-left: 44px; border-radius: 20px; }
+
+        /* Auth Overlay (PIN) */
+        #auth-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-body); z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .pin-title { font-size: 20px; font-weight: 800; color: var(--text-dark); margin-bottom: 8px; }
+        .pin-sub { font-size: 13px; color: var(--text-gray); margin-bottom: 30px; }
+        .pin-dots { display: flex; gap: 16px; margin-bottom: 40px; }
+        .dot { width: 14px; height: 14px; border-radius: 50%; background: #cbd5e1; transition: all 0.2s; }
+        .dot.filled { background: var(--primary); transform: scale(1.2); }
+        .numpad { display: grid; grid-template-columns: repeat(3, 80px); gap: 20px; }
+        .num-key {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: var(--bg-card); display: flex; justify-content: center; align-items: center;
+            font-size: 26px; font-weight: 700; color: var(--text-dark);
+            cursor: pointer; box-shadow: var(--shadow); border: none;
+        }
+        .num-key:active { background: rgba(255,255,255,.06); transform: scale(0.95); }
+        .num-key.empty { background: transparent; box-shadow: none; cursor: default; }
+
+        /* SweetAlert2 Overrides */
+        .swal2-popup { background: var(--bg-card) !important; border-radius: 20px !important; color: var(--text-dark) !important; font-family: 'Outfit', sans-serif !important; }
+        .swal2-title, .swal2-html-container, .swal2-input, .swal2-textarea, .swal2-select { color: var(--text-dark) !important; }
+        .swal2-input, .swal2-textarea, .swal2-select { background: rgba(255,255,255,.06) !important; border: 1px solid var(--border) !important; }
+        .swal2-confirm { background: var(--primary) !important; border-radius: 12px !important; font-weight: 700 !important; }
+        .swal2-cancel { background: rgba(255,255,255,.06) !important; color: var(--text-dark) !important; border-radius: 12px !important; }
+
+        @media (max-width: 480px) {
+            .numpad { gap: 14px; }
+            .num-key { width: 70px; height: 70px; font-size: 22px; }
+        }
+        @keyframes kxpop { from { transform: scale(.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @media (prefers-reduced-motion: reduce) { svg[aria-label="Khelastrix logo"] { animation: none !important; } }
+    
+
+        /* ============================================================
+           KHELASTRIX BRAND THEME — official palette
+           Gold #FFD33D · Deep Purple #702BFF · Neon Purple #E04CFF
+           Navy #07091B · Background #0D102B · Silver #C5CEDF
+           ============================================================ */
+        :root {
+            --kx-gold:#FFD33D; --kx-purple:#702BFF; --kx-neon:#E04CFF; --kx-navy:#07091B; --kx-bg:#0D102B; --kx-silver:#C5CEDF;
+            --kx-grad: linear-gradient(135deg,#702BFF 0%,#E04CFF 100%);
+            --bg-body:#07091B; --bg-card:#0D102B; --text-dark:#F2F4FF; --text-gray:#9AA6C4;
+            --primary:#702BFF; --primary-light:rgba(112,43,255,.2); --accent-purple:#E04CFF;
+            --border-color:rgba(197,206,223,.14); --border:rgba(197,206,223,.14);
+            --shadow:0 6px 18px rgba(0,0,0,.35);
+            color-scheme: dark;
+        }
+        body { background: radial-gradient(1100px 480px at 50% -8%, rgba(112,43,255,.22), transparent 62%) fixed, var(--bg-body); color: var(--text-dark); }
+        ::placeholder { color:#6f7aa0; opacity:1; }
+        input, select, textarea { color-scheme: dark; }
+        :focus-visible { outline: 2px solid var(--kx-gold); outline-offset: 2px; }
+        .swal2-popup { background: var(--kx-bg) !important; border: 1px solid var(--border-color) !important; color: var(--text-dark) !important; }
+        .swal2-title, .swal2-html-container { color: var(--text-dark) !important; }
+        .swal2-confirm { background: var(--kx-grad) !important; }
+        .swal2-cancel { background: rgba(255,255,255,.08) !important; color: var(--text-dark) !important; }
+        .swal2-input, .swal2-textarea, .swal2-select { background: rgba(255,255,255,.05) !important; color: var(--text-dark) !important; border: 1px solid var(--border-color) !important; }
+        .swal2-select option { background: var(--kx-bg); color: var(--text-dark); }
+
+        #auth-overlay { background: radial-gradient(circle at 50% 28%, #1c1050 0%, #07091B 70%); }
+        .kx-login-logo { width: min(46vw, 150px); aspect-ratio: 1; margin: 0 auto 12px; border-radius: 11%; overflow: hidden; box-shadow: 0 0 0 1px rgba(255,211,61,.28), 0 14px 40px rgba(112,43,255,.4); }
+        .kx-login-logo img { width: 100%; height: 100%; display: block; }
+        .admin-header { border-bottom: 1px solid rgba(255,211,61,.2); }
+        .admin-logo { letter-spacing: .08em; }
+        .admin-logo .logo-icon { width: 44px !important; height: 44px !important; border-radius: 11% !important; overflow: hidden; background: var(--kx-navy) !important; padding: 0; box-shadow: 0 0 0 1px rgba(255,211,61,.35); }
+        .admin-logo .logo-icon img { width: 100%; height: 100%; display: block; }
+        .btn-primary { background: var(--kx-grad); color: #fff; }
+        .form-input, .form-input:focus { color: var(--text-dark); }
+        .form-input:focus { border-color: var(--kx-neon); }
+        .pin-title { color: var(--text-dark); }
+    </style>
+</head>
+<body>
+
+    <!-- AUTH OVERLAY -->
+    <div id="auth-overlay">
+        <div class="kx-login-logo" data-kx-logo="150"></div>
+        <div class="pin-title">Khelastrix Admin</div>
+        <div class="pin-sub" id="login-sub">Sign in with your admin account</div>
+        <div style="width:min(340px,86vw);display:grid;gap:10px">
+            <input id="adm-email" class="form-input" type="email" placeholder="Email" autocomplete="username">
+            <input id="adm-pass" class="form-input" type="password" placeholder="Password" autocomplete="current-password">
+            <button class="btn btn-primary" style="width:100%" onclick="adminLogin()"><i class="fas fa-sign-in-alt"></i> Login</button>
+            <details style="margin-top:6px;font-size:12px;color:var(--text-gray)">
+                <summary>First time? Become the admin</summary>
+                <div style="display:grid;gap:8px;margin-top:8px">
+                    <div>1) Create a normal account in the user app, 2) log in here, 3) enter the setup code you set during deployment.</div>
+                    <input id="adm-code" class="form-input" type="password" placeholder="Admin setup code">
+                    <button class="btn btn-primary" style="width:100%" onclick="claimAdminNow()">Activate admin</button>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <div class="admin-header">
+        <div class="admin-logo">
+            <div class="logo-icon" data-kx-logo="44"></div>
+            <span>KHELASTRIX ADMIN</span>
+        </div>
+        <div class="header-actions">
+            <button class="header-btn danger" onclick="adminLogout()">
+                <i class="fas fa-power-off"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <section id="sec-dashboard" class="section active">
+        <div class="stat-card">
+            <div class="stat-val" id="stat-users">0</div>
+            <div class="stat-lbl">Total Registered Users</div>
+        </div>
+
+        <div class="grid-section-title">Core Modules</div>
+        <div class="dash-grid">
+            <div class="dash-item" onclick="navTo('matches')">
+                <div class="dash-icon-box" style="background: #f3e8ff; color: #7c3aed;"><i class="fas fa-gamepad"></i></div>
+                <div class="dash-text">Matches</div>
+            </div>
+            <div class="dash-item" onclick="navTo('categories')">
+                <div class="dash-icon-box" style="background: #dbeafe; color: #2563eb;"><i class="fas fa-layer-group"></i></div>
+                <div class="dash-text">Categories</div>
+            </div>
+            <div class="dash-item" onclick="navTo('users')">
+                <div class="dash-icon-box" style="background: #d1fae5; color: #059669;"><i class="fas fa-users"></i></div>
+                <div class="dash-text">Users</div>
+            </div>
+            <div class="dash-item" onclick="navTo('withdraw')" style="position:relative;">
+                <div class="dash-icon-box" style="background: #fee2e2; color: #dc2626;"><i class="fas fa-wallet"></i></div>
+                <div class="dash-text">Withdrawals</div>
+                <div id="withdraw-badge" class="dash-badge" style="display:none;">0</div>
+            </div>
+        </div>
+
+        <div class="grid-section-title">Configuration</div>
+        <div class="dash-grid">
+            <div class="dash-item" onclick="navTo('reader')">
+                <div class="dash-icon-box" style="background: #e0f2fe; color: #0284c7;"><i class="fas fa-sms"></i></div>
+                <div class="dash-text">SMS Reader</div>
+            </div>
+            <div class="dash-item" onclick="navTo('games')">
+                <div class="dash-icon-box" style="background: #ede9fe; color: #7c3aed;"><i class="fas fa-gamepad"></i></div>
+                <div class="dash-text">Game API Keys</div>
+            </div>
+            <div class="dash-item" onclick="navTo('settings')">
+                <div class="dash-icon-box" style="background: #fef3c7; color: #d97706;"><i class="fas fa-sliders-h"></i></div>
+                <div class="dash-text">App Settings</div>
+            </div>
+            <div class="dash-item" onclick="navTo('sliders')">
+                <div class="dash-icon-box" style="background: #fce7f3; color: #db2777;"><i class="fas fa-images"></i></div>
+                <div class="dash-text">Banners</div>
+            </div>
+            <div class="dash-item" onclick="navTo('notify')">
+                <div class="dash-icon-box" style="background: #ccfbf1; color: #0d9488;"><i class="fas fa-paper-plane"></i></div>
+                <div class="dash-text">Notify</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section id="sec-categories" class="section">
+        <button class="back-nav" onclick="navTo('dashboard')"><i class="fas fa-chevron-left"></i> Back</button>
+        <div class="list-container" id="category-list"></div>
+        <button class="fab" onclick="addCategory()"><i class="fas fa-plus"></i></button>
+    </section>
+
+    <!-- MATCHES -->
+    <section id="sec-matches" class="section">
+        <button class="back-nav" onclick="navTo('dashboard')"><i class="fas fa-chevron-left"></i> Back</button>
+        <div class="list-container" id="match-list"></div>
+        <button class="fab" onclick="createMatchPopup()"><i class="fas fa-plus"></i></button>
+    </section>
+
+    <!-- USERS -->
+    <section id="sec-users" class="section">
+        <button class="back-nav" onclick="navTo('dashboard')"><i class="fas fa-chevron-left"></i> Back</button>
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="user-search" class="form-input search-input" placeholder="Search users..." onkeyup="filterUsers()">
+        </div>
+        <div class="list-container" id="user-list"></div>
+    </section>
+
+    <!-- WITHDRAWALS -->
+    <section id="sec-withdraw" class="section">
+        <button class="back-nav" onclick="navTo('dashboard')"><i class="fas fa-chevron-left"></i> Back</button>
+        <div class="list-container" id="withdraw-list"></div>
+    </section>
+
+    <!-- SMS READER -->
+    <section id="sec-reader" class="section">
+        <button class="back-nav" onclick="navTo('dashboard')"><i class="fas fa-chevron-left"></i> Back</button>
+        <div class="flat-card">
+            <h4 style="margin-bottom:8px; color: var(--kx-neon); font-weight:800;">SMS Reader Keys</h4>
+            <div style="font-size:12px; color:var(--text-gray); margin-bottom:12px;">Generate a key and put it in the SMS Receiver app (header x-reader-key, see SMS_API.md). The key is shown ONCE. Deactivate or delete a key to stop that phone instantly.</div>
+            <input id="reader-name" class="form-input" placeholder="Reader name (e.g. My Phone)" style="margin-bottom:10px;">
+            <button class="btn btn-primary" style="width:100%;" onclick="generateReaderKey()"><i class="fas fa-key"></i> Generate Key</button>
+        </div>
+        <div class="list-container" id="reader-list" style="margin-top:16px;"></div>
+        <div class="flat-card" style="margin-top:16px;">
+            <h4 style="margin-bottom:12px; color:var(--success); font-weight:800;">Recent SMS Received</h4>
+            <div id="sms-log"></div>
+        </div>
+    </section>
+
+    <section id="sec-games" class="section">
+        <button class="back-nav" onclick="navTo('dashboard')"><i class="fas fa-chevron-left"></i> Back</button>
+        <div class="flat-card">
+            <h4 style="margin-bottom:8px; color: var(--kx-neon); font-weight:800;">Game API Keys</h4>
+            <div style="font-size:12px; color:var(--text-gray); margin-bottom:12px;">Give a key to a game server (Ludo, Carrom or any new game). With it the game can read players, set the room, start the match and send results — prizes are paid automatically. The key is shown ONCE. Leave the category empty to allow all matches. See GAME_API.md.</div>
+            <input id="game-name" class="form-input" placeholder="Game name (e.g. Ludo Server)" style="margin-bottom:10px;">
+            <input id="game-cat" class="form-input" placeholder="Limit to category id or title word (optional)" style="margin-bottom:10px;">
+            <button class="btn btn-primary" style="width:100%;" onclick="generateGameKey()"><i class="fas fa-key"></i> Generate Game Key</button>
+        </div>
+        <div class="list-container" id="game-list" style="margin-top:16px;"></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="sec-settings" class="section">
+        <button class="back-nav" onclick="navTo('dashboard')"><i class="fas fa-chevron-left"></i> Back</button>
+
+        <div class="flat-card">
+            <h4 style="margin-bottom:16px; color: var(--kx-neon); font-weight:800;">General Info</h4>
+            <div class="form-group"><label class="form-label">App Name</label><input type="text" id="set-app-name" class="form-input" placeholder="Khelastrix"></div>
+            <div class="form-group"><label class="form-label">Marquee Notice</label><textarea id="set-notice" class="form-input" rows="2"></textarea></div>
+            <div class="form-group"><label class="form-label">Startup Popup Text</label><textarea id="set-popup" class="form-input" rows="3"></textarea></div>
+            <div class="form-group">
+                <label class="form-label">Enable Popup</label>
+                <select id="set-show-popup" class="form-input"><option value="true">Yes</option><option value="false">No</option></select>
+            </div>
+        </div>
+
+        <div class="flat-card" style="margin-top:16px;">
+            <h4 style="margin-bottom:16px; color:var(--success); font-weight:800;">Payment Info</h4>
+            <div class="form-group"><label class="form-label">bKash Number</label><input type="number" id="set-bkash" class="form-input"></div>
+            <div class="form-group"><label class="form-label">Nagad Number</label><input type="number" id="set-nagad" class="form-input"></div>
+            <div class="form-group"><label class="form-label">Rocket Number</label><input type="number" id="set-rocket" class="form-input"></div>
+        </div>
+
+        <div class="flat-card" style="margin-top:16px;">
+            <h4 style="margin-bottom:16px; color:var(--info); font-weight:800;">Links</h4>
+            <div class="form-group"><label class="form-label">Support Link</label><input type="text" id="set-support" class="form-input"></div>
+            <div class="form-group"><label class="form-label">Shop Link</label><input type="text" id="set-shop" class="form-input"></div>
+            <div class="form-group"><label class="form-label">How to Add Money (Video)</label><input type="text" id="set-vid-add" class="form-input"></div>
+            <div class="form-group"><label class="form-label">How to Join Match (Video)</label><input type="text" id="set-vid-join" class="form-input"></div>
+            <div class="form-group"><label class="form-label">How to Get Room ID (Video)</label><input type="text" id="set-vid-room" class="form-input"></div>
+        </div>
+
+        <button class="btn btn-primary" style="width:100%; margin-top:20px; padding:16px; font-size:15px; border-radius:16px;" onclick="saveSettings()">
+            <i class="fas fa-save"></i> SAVE ALL SETTINGS
+        </button>
+    </section>
+
+    <!-- SLIDERS -->
+    <section id="sec-sliders" class="section">
+        <button class="back-nav" onclick="navTo('dashboard')"><i class="fas fa-chevron-left"></i> Back</button>
+        <div class="list-container" id="slider-list"></div>
+
+        <div class="flat-card" style="margin-top:16px;">
+            <h4 style="margin-bottom:14px; font-weight:800;">Add New Banner</h4>
+            <div class="form-group"><input type="text" id="new-slider-img" class="form-input" placeholder="Image URL"></div>
+            <div class="form-group"><input type="text" id="new-slider-link" class="form-input" placeholder="Link (Optional)"></div>
+            <button class="btn btn-primary" style="width:100%" onclick="addSlider()"><i class="fas fa-plus"></i> ADD BANNER</button>
+        </div>
+    </section>
+
+    <!-- NOTIFICATION -->
+    <section id="sec-notify" class="section">
+        <button class="back-nav" onclick="navTo('dashboard')"><i class="fas fa-chevron-left"></i> Back</button>
+        <div class="flat-card">
+            <div class="form-group"><label class="form-label">Notification Title</label><input type="text" id="notif-title" class="form-input"></div>
+            <div class="form-group"><label class="form-label">Message Body</label><textarea id="notif-body" class="form-input" rows="4"></textarea></div>
+            <button class="btn btn-primary" style="width:100%" onclick="sendNotification()"><i class="fas fa-paper-plane"></i> SEND NOTIFICATION</button>
+        </div>
+    </section>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    
+    <script>
+/* KHELASTRIX official animated logo (brand/Khelastrix_Animated_Logo.svg), embedded unchanged as a data URI.
+   Rendered through <img>, so its own CSS animations (pulse, float, shine, orbit, twinkle) and its
+   prefers-reduced-motion rule work as designed, and ids/classes never clash with the page. */
+(function () {
+  var SRC = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIgogICAgIHdpZHRoPSIxMDI0IiBoZWlnaHQ9IjEwMjQiIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiIHJvbGU9ImltZyIKICAgICBhcmlhLWxhYmVsbGVkYnk9InRpdGxlIGRlc2MiPgogIDx0aXRsZSBpZD0idGl0bGUiPktoZWxhc3RyaXgg4oCUIFRvdXJuYW1lbnQgR2FtaW5nIExvZ288L3RpdGxlPgogIDxkZXNjIGlkPSJkZXNjIj5BbiBhbmltYXRlZCBlc3BvcnRzIHNoaWVsZCBsb2dvIHdpdGggYSBnb2xkZW4gdHJvcGh5LCBnYW1lIGNvbnRyb2xsZXIsIGFuZCBLaGVsYXN0cml4IHdvcmRtYXJrLjwvZGVzYz4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZ29sZCIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmY2YTgiLz48c3RvcCBvZmZzZXQ9Ii4yOCIgc3RvcC1jb2xvcj0iI2ZmZDMzZCIvPgogICAgICA8c3RvcCBvZmZzZXQ9Ii42MiIgc3RvcC1jb2xvcj0iI2Y1OWIwMCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZmZjBhMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ic2lsdmVyIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIvPjxzdG9wIG9mZnNldD0iLjU1IiBzdG9wLWNvbG9yPSIjYjhjNWRmIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzY4NzU4ZiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0icHVycGxlIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2UwNGNmZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzcwMmJmZiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmx1ZSIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM3Y2U4ZmYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMxNzZiZmYiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8ZmlsdGVyIGlkPSJnbG93IiB4PSItNjAlIiB5PSItNjAlIiB3aWR0aD0iMjIwJSIgaGVpZ2h0PSIyMjAlIj4KICAgICAgPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iOSIgcmVzdWx0PSJibHVyIi8+CiAgICAgIDxmZU1lcmdlPjxmZU1lcmdlTm9kZSBpbj0iYmx1ciIvPjxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPjwvZmVNZXJnZT4KICAgIDwvZmlsdGVyPgogICAgPGZpbHRlciBpZD0ic2hhZG93IiB4PSItMzAlIiB5PSItMzAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIxNjAlIj4KICAgICAgPGZlR2F1c3NpYW5CbHVyIGluPSJTb3VyY2VBbHBoYSIgc3RkRGV2aWF0aW9uPSIxMiIvPgogICAgICA8ZmVPZmZzZXQgZHk9IjEwIi8+PGZlQ29tcG9uZW50VHJhbnNmZXI+PGZlRnVuY0EgdHlwZT0ibGluZWFyIiBzbG9wZT0iLjciLz48L2ZlQ29tcG9uZW50VHJhbnNmZXI+CiAgICAgIDxmZU1lcmdlPjxmZU1lcmdlTm9kZS8+PGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+PC9mZU1lcmdlPgogICAgPC9maWx0ZXI+CiAgICA8Y2xpcFBhdGggaWQ9InNoaWVsZENsaXAiPjxwYXRoIGQ9Ik01MTIgODAgODUwIDE5MCA4MTcgNjEwUTc5MCA4MjAgNTEyIDk0NCAyMzQgODIwIDIwNyA2MTBMMTc0IDE5MFoiLz48L2NsaXBQYXRoPgogIDwvZGVmcz4KCiAgPHN0eWxlPgogICAgLnB1bHNlIHsgYW5pbWF0aW9uOiBwdWxzZSAyLjhzIGVhc2UtaW4tb3V0IGluZmluaXRlOyB0cmFuc2Zvcm0tb3JpZ2luOjUxMnB4IDUwMHB4OyB9CiAgICAuZmxvYXQgeyBhbmltYXRpb246IGZsb2F0IDMuNnMgZWFzZS1pbi1vdXQgaW5maW5pdGU7IHRyYW5zZm9ybS1vcmlnaW46NTEycHggMzMwcHg7IH0KICAgIC5zaGluZSB7IGFuaW1hdGlvbjogc2hpbmUgMy40cyBlYXNlLWluLW91dCBpbmZpbml0ZTsgfQogICAgLm9yYml0IHsgYW5pbWF0aW9uOiBvcmJpdCAxMnMgbGluZWFyIGluZmluaXRlOyB0cmFuc2Zvcm0tb3JpZ2luOjUxMnB4IDUwMHB4OyB9CiAgICAuc3BhcmsgeyBhbmltYXRpb246IHR3aW5rbGUgMS44cyBlYXNlLWluLW91dCBpbmZpbml0ZSBhbHRlcm5hdGU7IH0KICAgIEBrZXlmcmFtZXMgcHVsc2UgeyAwJSwxMDAle29wYWNpdHk6LjU1OyB0cmFuc2Zvcm06c2NhbGUoMSl9IDUwJXtvcGFjaXR5OjE7IHRyYW5zZm9ybTpzY2FsZSgxLjAzNSl9IH0KICAgIEBrZXlmcmFtZXMgZmxvYXQgeyAwJSwxMDAle3RyYW5zZm9ybTp0cmFuc2xhdGVZKDApfSA1MCV7dHJhbnNmb3JtOnRyYW5zbGF0ZVkoLTEycHgpfSB9CiAgICBAa2V5ZnJhbWVzIHNoaW5lIHsgMCV7dHJhbnNmb3JtOnRyYW5zbGF0ZVgoLTI2MHB4KTtvcGFjaXR5OjB9IDIwJXtvcGFjaXR5Oi44fSA1NSUsMTAwJXt0cmFuc2Zvcm06dHJhbnNsYXRlWCg1NjBweCk7b3BhY2l0eTowfSB9CiAgICBAa2V5ZnJhbWVzIG9yYml0IHsgdG97dHJhbnNmb3JtOnJvdGF0ZSgzNjBkZWcpfSB9CiAgICBAa2V5ZnJhbWVzIHR3aW5rbGUgeyBmcm9te29wYWNpdHk6LjI1OyB0cmFuc2Zvcm06c2NhbGUoLjc1KX0gdG97b3BhY2l0eToxOyB0cmFuc2Zvcm06c2NhbGUoMS4yKX0gfQogICAgQG1lZGlhIChwcmVmZXJzLXJlZHVjZWQtbW90aW9uOiByZWR1Y2UpIHsKICAgICAgLnB1bHNlLC5mbG9hdCwuc2hpbmUsLm9yYml0LC5zcGFyayB7IGFuaW1hdGlvbjpub25lICFpbXBvcnRhbnQ7IH0KICAgIH0KICA8L3N0eWxlPgoKICA8cmVjdCB3aWR0aD0iMTAyNCIgaGVpZ2h0PSIxMDI0IiByeD0iMTEwIiBmaWxsPSIjMDcwOTFiIi8+CiAgPGNpcmNsZSBjeD0iNTEyIiBjeT0iNDgwIiByPSIzOTAiIGZpbGw9IiMyMTEwNGEiIG9wYWNpdHk9Ii40NSIgZmlsdGVyPSJ1cmwoI2dsb3cpIiBjbGFzcz0icHVsc2UiLz4KICA8ZyBjbGFzcz0ib3JiaXQiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNwdXJwbGUpIiBvcGFjaXR5PSIuNjUiPgogICAgPGVsbGlwc2UgY3g9IjUxMiIgY3k9IjUwMCIgcng9IjQ0NSIgcnk9IjMwMCIgc3Ryb2tlLXdpZHRoPSI1IiBzdHJva2UtZGFzaGFycmF5PSIyNCAyMiIvPgogICAgPGVsbGlwc2UgY3g9IjUxMiIgY3k9IjUwMCIgcng9IjQwMCIgcnk9IjM0NSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtZGFzaGFycmF5PSI0IDI0Ii8+CiAgPC9nPgogIDxnIGNsYXNzPSJzcGFyayIgZmlsbD0iI2ZmZTM2YiI+CiAgICA8cGF0aCBkPSJNMTUwIDMzMGw5IDI1IDI1IDktMjUgOS05IDI1LTktMjUtMjUtOSAyNS05eiIvPgogICAgPHBhdGggZD0iTTg2NSAzMDBsNyAxOSAxOSA3LTE5IDctNyAxOS03LTE5LTE5LTcgMTktN3oiLz4KICAgIDxwYXRoIGQ9Ik04MzUgNzAwbDYgMTYgMTYgNi0xNiA2LTYgMTYtNi0xNi0xNi02IDE2LTZ6Ii8+CiAgICA8Y2lyY2xlIGN4PSIyMzUiIGN5PSI1NzAiIHI9IjYiLz48Y2lyY2xlIGN4PSI3ODUiIGN5PSI1MjAiIHI9IjUiLz4KICA8L2c+CgogIDwhLS0gU2hpZWxkIC0tPgogIDxwYXRoIGQ9Ik01MTIgNzUgODU4IDE4OCA4MjMgNjIyUTc5NSA4MzAgNTEyIDk1NSAyMjkgODMwIDIwMSA2MjJMMTY2IDE4OFoiCiAgICAgICAgZmlsbD0iIzBkMTAyYiIgc3Ryb2tlPSJ1cmwoI3B1cnBsZSkiIHN0cm9rZS13aWR0aD0iMTgiIGZpbHRlcj0idXJsKCNzaGFkb3cpIi8+CiAgPHBhdGggZD0iTTUxMiAxMDUgODI1IDIwNyA3OTMgNjExUTc2NyA3OTQgNTEyIDkwOCAyNTcgNzk0IDIzMSA2MTFMMTk5IDIwN1oiCiAgICAgICAgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2dvbGQpIiBzdHJva2Utd2lkdGg9IjgiLz4KICA8cGF0aCBkPSJNNTEyIDEyOCA3OTUgMjIwIDc2NyA2MDBRNzQzIDc2NCA1MTIgODY3IDI4MSA3NjQgMjU3IDYwMEwyMjkgMjIwWiIKICAgICAgICBmaWxsPSIjMTExNzM1IiBzdHJva2U9IiMzZTJhODMiIHN0cm9rZS13aWR0aD0iMyIvPgoKICA8IS0tIFRyb3BoeSBhbmQgY29udHJvbGxlciAtLT4KICA8ZyBjbGFzcz0iZmxvYXQiIGZpbHRlcj0idXJsKCNzaGFkb3cpIj4KICAgIDxwYXRoIGQ9Ik0zOTIgMTk1aDI0MHY2NmMwIDExMy01MSAxNzEtMTIwIDE3MXMtMTIwLTU4LTEyMC0xNzF6IgogICAgICAgICAgZmlsbD0idXJsKCNnb2xkKSIgc3Ryb2tlPSIjZmZmMGEwIiBzdHJva2Utd2lkdGg9IjgiLz4KICAgIDxwYXRoIGQ9Ik0zOTIgMjIwaC03NWMtNSA3OCAyNiAxMjcgMTA0IDEzN002MzIgMjIwaDc1YzUgNzgtMjYgMTI3LTEwNCAxMzciCiAgICAgICAgICBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZ29sZCkiIHN0cm9rZS13aWR0aD0iMjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPHBhdGggZD0iTTUxMiAyNDJsMTcgMzYgNDAgNi0yOSAyOCA3IDQwLTM1LTE5LTM1IDE5IDctNDAtMjktMjggNDAtNnoiCiAgICAgICAgICBmaWxsPSIjZmZmM2ExIiBzdHJva2U9IiNkODg3MDAiIHN0cm9rZS13aWR0aD0iNSIvPgogICAgPHBhdGggZD0iTTQ3MCA0MzVoODR2NDJoLTg0eiIgZmlsbD0idXJsKCNnb2xkKSIvPgogICAgPHBhdGggZD0iTTQzMCA0NzdoMTY0djI0SDQzMHoiIHJ4PSI4IiBmaWxsPSJ1cmwoI2dvbGQpIi8+CiAgPC9nPgoKICA8ZyBmaWx0ZXI9InVybCgjc2hhZG93KSI+CiAgICA8cGF0aCBkPSJNMzAwIDUyNVEzMTAgNDc1IDM3NSA0NzVoMjc0cTY1IDAgNzUgNTBsMzIgMTAzcTEwIDQyLTM1IDQyaC04OGwtNDQtMzdINDE1bC00NCAzN2gtODhxLTQ1IDAtMzUtNDJ6IgogICAgICAgICAgZmlsbD0iIzE1MWIzNyIgc3Ryb2tlPSJ1cmwoI3NpbHZlcikiIHN0cm9rZS13aWR0aD0iMTAiLz4KICAgIDxwYXRoIGQ9Ik0zNzAgNTQ4djc4TTMzMSA1ODdoNzgiIHN0cm9rZT0idXJsKCNzaWx2ZXIpIiBzdHJva2Utd2lkdGg9IjE4IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxjaXJjbGUgY3g9IjY4MSIgY3k9IjU1OCIgcj0iMTciIGZpbGw9IiNmZjRiNjciLz4KICAgIDxjaXJjbGUgY3g9IjcyNCIgY3k9IjU4OSIgcj0iMTciIGZpbGw9IiNmZmQzM2QiLz4KICAgIDxjaXJjbGUgY3g9IjYzOCIgY3k9IjU4OSIgcj0iMTciIGZpbGw9IiMzNWQ4ZmYiLz4KICAgIDxjaXJjbGUgY3g9IjY4MSIgY3k9IjYyMCIgcj0iMTciIGZpbGw9IiM3YmZmNzMiLz4KICAgIDxjaXJjbGUgY3g9IjQ1NyIgY3k9IjU5MCIgcj0iMjgiIGZpbGw9IiMwYjEwMjkiIHN0cm9rZT0idXJsKCNibHVlKSIgc3Ryb2tlLXdpZHRoPSI5Ii8+CiAgICA8Y2lyY2xlIGN4PSI1NjciIGN5PSI1OTAiIHI9IjI4IiBmaWxsPSIjMGIxMDI5IiBzdHJva2U9InVybCgjYmx1ZSkiIHN0cm9rZS13aWR0aD0iOSIvPgogICAgPHRleHQgeD0iNTEyIiB5PSI1NzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ4IiBmb250LXdlaWdodD0iOTAwIiBmaWxsPSIjZmZmIj5LPC90ZXh0PgogIDwvZz4KCiAgPCEtLSBXb3JkbWFyayBwYW5lbCAtLT4KICA8cGF0aCBkPSJNMTMwIDY3NSAxOTAgNjM1SDgzNGw2MCA0MC0yNiAxNDVIMTU2eiIgZmlsbD0iIzA1MDcxMyIgc3Ryb2tlPSJ1cmwoI3B1cnBsZSkiIHN0cm9rZS13aWR0aD0iMTAiIGZpbHRlcj0idXJsKCNzaGFkb3cpIi8+CiAgPHBhdGggZD0iTTE2MCA2NzVIODY0IiBzdHJva2U9InVybCgjZ29sZCkiIHN0cm9rZS13aWR0aD0iNyIvPgogIDx0ZXh0IHg9IjUxMiIgeT0iNzY1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwgQmxhY2ssIEFyaWFsLCBzYW5zLXNlcmlmIgogICAgICAgIGZvbnQtc2l6ZT0iMTAwIiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTUiIHBhaW50LW9yZGVyPSJzdHJva2UiCiAgICAgICAgc3Ryb2tlPSIjMDgwODE3IiBzdHJva2Utd2lkdGg9IjE4IiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4KICAgIDx0c3BhbiBmaWxsPSJ1cmwoI3NpbHZlcikiPktoZWxhPC90c3Bhbj48dHNwYW4gZmlsbD0idXJsKCNnb2xkKSI+c3RyaXg8L3RzcGFuPgogIDwvdGV4dD4KICA8cGF0aCBkPSJNMjM1IDgwMEg3ODkiIHN0cm9rZT0idXJsKCNnb2xkKSIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8ZyBmaWxsPSJ1cmwoI2dvbGQpIj4KICAgIDxwYXRoIGQ9Ik01MTIgODE1bDEwIDIwIDIyIDMtMTYgMTUgNCAyMi0yMC0xMS0yMCAxMSA0LTIyLTE2LTE1IDIyLTN6Ii8+CiAgICA8cGF0aCBkPSJNNDMwIDgyNGw2IDEyIDEzIDItMTAgOSAyIDEzLTExLTYtMTEgNiAyLTEzLTEwLTkgMTMtMnoiLz4KICAgIDxwYXRoIGQ9Ik01OTQgODI0bDYgMTIgMTMgMi0xMCA5IDIgMTMtMTEtNi0xMSA2IDItMTMtMTAtOSAxMy0yeiIvPgogIDwvZz4KICA8dGV4dCB4PSI1MTIiIHk9Ijg5NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSIyNSIgZm9udC13ZWlnaHQ9IjcwMCIgbGV0dGVyLXNwYWNpbmc9IjgiIGZpbGw9IiNkOWRlZjciPlRPVVJOQU1FTlQgQVJFTkE8L3RleHQ+CgogIDwhLS0gTW92aW5nIGxpZ2h0IHN3ZWVwIGFjcm9zcyB0aGUgd29yZG1hcmsgLS0+CiAgPGcgY2xpcC1wYXRoPSJ1cmwoI3NoaWVsZENsaXApIiBwb2ludGVyLWV2ZW50cz0ibm9uZSI+CiAgICA8cmVjdCBjbGFzcz0ic2hpbmUiIHg9IjI0NSIgeT0iNjYwIiB3aWR0aD0iMTEwIiBoZWlnaHQ9IjE5MCIKICAgICAgICAgIHRyYW5zZm9ybT0ic2tld1goLTIyKSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjAiLz4KICA8L2c+Cjwvc3ZnPgo=';
+  var FALLBACK = 'brand/logo-512.jpg'; /* static fallback if animated SVG cannot render */
+  window.KX_LOGO_SRC = SRC;
+  document.querySelectorAll('[data-kx-logo]').forEach(function (el) {
+    if (el.firstChild) return;
+    var size = parseInt(el.getAttribute('data-kx-logo'), 10) || 64;
+    var img = new Image();
+    img.width = size; img.height = size; img.alt = 'Khelastrix logo';
+    img.decoding = 'async'; img.draggable = false;
+    img.onerror = function () { img.onerror = null; img.src = FALLBACK; };
+    img.src = SRC;
+    el.appendChild(img);
+  });
+})();
+</script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
+        import { getDatabase, ref, set, onValue, push, update, remove, get, limitToLast, query } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAwxezooisgMc-p5IKKjQcdooULWSE1XQ0",
+            authDomain: "ludofire-arena.firebaseapp.com",
+            databaseURL: "https://ludofire-arena-default-rtdb.firebaseio.com",
+            projectId: "ludofire-arena",
+            storageBucket: "ludofire-arena.firebasestorage.app",
+            messagingSenderId: "894821053627",
+            appId: "1:894821053627:web:45faa257d425cb6aff659e",
+            measurementId: "G-NZZJ61PZZC"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+        // ---- security helpers ----
+        const esc = (v) => String(v ?? '').replace(/[&<>"'`]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c]));
+        window.esc = esc;
+        const fns = getFunctions(app, 'asia-southeast1');
+        const call = (name, data) => httpsCallable(fns, name)(data || {}).then((r) => r.data);
+        const errMsg = (e) => (e && e.message ? String(e.message).replace(/^(functions\/)?[\w-]+:\s*/, '') : 'Something went wrong');
+        // never leave a blank screen: show the real error
+        window.addEventListener('error', (e) => showFatal(e.message));
+        window.addEventListener('unhandledrejection', (e) => { if (!(e.reason && e.reason.code)) showFatal(e.reason && e.reason.message); });
+        function showFatal(msg) {
+            if (document.getElementById('fatal-box')) return;
+            const d = document.createElement('div'); d.id = 'fatal-box';
+            d.style.cssText = 'position:fixed;left:10px;right:10px;bottom:10px;z-index:99999;background:#111827;color:#fff;padding:12px 14px;border-radius:12px;font:13px/1.5 sans-serif';
+            d.textContent = 'Problem: ' + (msg || 'unknown error') + ' — check internet, then reload.';
+            d.onclick = () => d.remove(); document.body.appendChild(d);
+        }
+
+
+        let allUsers = [];
+        let allCategories = [];
+        let allMatches = [];
+        let started = false;
+        const startAdmin = () => { if (started) return; started = true; document.getElementById('auth-overlay').style.display = 'none'; initAdmin(); };
+        onAuthStateChanged(auth, async (u) => {
+            if (!u) { document.getElementById('auth-overlay').style.display = 'flex'; return; }
+            const t = await u.getIdTokenResult(true);
+            if (t.claims.admin === true) startAdmin();
+            else document.getElementById('login-sub').textContent = 'Logged in as ' + u.email + ' — not an admin yet';
+        });
+        window.adminLogin = async () => {
+            try { await signInWithEmailAndPassword(auth, document.getElementById('adm-email').value.trim(), document.getElementById('adm-pass').value); }
+            catch (e) { Swal.fire({ icon: 'error', title: 'Login failed', text: 'Wrong email or password' }); }
+        };
+        window.claimAdminNow = async () => {
+            if (!auth.currentUser) return Swal.fire('Login first', 'Enter email + password and press Login, then activate.', 'info');
+            try { await call('claimAdmin', { code: document.getElementById('adm-code').value }); await auth.currentUser.getIdToken(true); startAdmin(); }
+            catch (e) { Swal.fire('Error', errMsg(e), 'error'); }
+        };
+        window.adminLogout = () => signOut(auth).then(() => location.reload());
+        // --- NAVIGATION ---
+        window.navTo = (id) => {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(`sec-${id}`).classList.add('active');
+        };
+
+        // --- INIT ---
+        function initAdmin() {
+            onValue(ref(db, 'users'), s => {
+                const d = s.val();
+                if(d) {
+                    allUsers = Object.entries(d).map(([k,v]) => ({uid:k, ...v}));
+                    document.getElementById('stat-users').innerText = allUsers.length;
+                    renderUsers(allUsers);
+                }
+            });
+
+            loadCategories();
+            loadMatches();
+            loadWithdrawals();
+            loadSettings();
+            loadSliders();
+            loadReaders();
+
+            onValue(ref(db, 'withdraw_requests'), s => {
+                const d = s.val();
+                if(d) {
+                    const pending = Object.entries(d).filter(([k, req]) => req.status === 'pending');
+                    const badge = document.getElementById('withdraw-badge');
+                    if(pending.length > 0) { badge.innerText = pending.length; badge.style.display = 'flex'; }
+                    else { badge.style.display = 'none'; }
+                }
+            });
+        }
+
+        // --- WITHDRAWALS ---
+        function loadWithdrawals() {
+            onValue(ref(db, 'withdraw_requests'), s => {
+                const list = document.getElementById('withdraw-list');
+                const d = s.val();
+                if(!d) return list.innerHTML = "<div style='text-align:center; padding:40px; color:var(--text-gray);'>No requests found</div>";
+
+                const pendings = Object.entries(d).filter(([k, req]) => req.status === 'pending');
+                const processed = Object.entries(d).filter(([k, req]) => req.status !== 'pending');
+
+                let html = "";
+
+                if(pendings.length > 0) {
+                    html += `<div style="margin-bottom:12px; color:var(--warning); font-weight:700; font-size:14px;"><i class="fas fa-clock"></i> Pending (${pendings.length})</div>`;
+                    pendings.sort((a, b) => new Date(b[1].timestamp) - new Date(a[1].timestamp));
+                    pendings.forEach(([reqId, req]) => { html += createWithdrawCard(reqId, req, 'pending'); });
+                }
+
+                if(processed.length > 0) {
+                    html += `<div style="margin:16px 0 12px; color:var(--text-gray); font-weight:700; font-size:13px;"><i class="fas fa-check-circle"></i> Processed</div>`;
+                    processed.sort((a, b) => new Date(b[1].timestamp) - new Date(a[1].timestamp));
+                    processed.slice(0, 20).forEach(([reqId, req]) => { html += createWithdrawCard(reqId, req, req.status); });
+                }
+
+                list.innerHTML = html || "<div style='text-align:center; padding:40px; color:var(--text-gray);'>No requests</div>";
+            });
+        }
+
+        function createWithdrawCard(reqId, req, status) {
+            const tagClass = status === 'pending' ? 'tag-yellow' : (status === 'approved' ? 'tag-green' : 'tag-danger');
+            const tagText = status === 'pending' ? 'PENDING' : (status === 'approved' ? 'APPROVED' : 'REJECTED');
+
+            let actions = '';
+            if(status === 'pending') {
+                actions = `
+                    <div class="fc-actions">
+                        <button class="btn btn-success" onclick="approveWithdraw('${reqId}', '${req.userId}', ${req.amount})"><i class="fas fa-check"></i> Approve</button>
+                        <button class="btn btn-danger" onclick="rejectWithdraw('${reqId}', '${req.userId}', ${req.amount})"><i class="fas fa-times"></i> Reject</button>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="flat-card">
+                    <div class="fc-header">
+                        <div class="fc-title">৳${req.amount}</div>
+                        <div class="fc-tag ${tagClass}">${tagText}</div>
+                    </div>
+                    <div class="fc-detail"><span>User:</span> <span class="fc-value">${req.userName || req.userEmail || req.userId}</span></div>
+                    <div class="fc-detail"><span>Method:</span> <span class="fc-value">${esc(req.method)}</span></div>
+                    <div class="fc-detail"><span>Number:</span> <span class="fc-value">${esc(req.mobileNumber)}</span></div>
+                    <div class="fc-detail"><span>Date:</span> ${req.timestamp}</div>
+                    ${actions}
+                </div>
+            `;
+        }
+
+        window.approveWithdraw = async (reqId, userId, amount) => {
+            const r = await Swal.fire({ title: 'Approve?', text: `Approve ${amount} TK?`, icon: 'question', showCancelButton: true, confirmButtonText: 'Yes' });
+            if (!r.isConfirmed) return;
+            try { await call('adminWithdraw', { reqId, action: 'approve' }); Swal.fire({ icon: 'success', title: 'Approved!', timer: 1500, showConfirmButton: false }); }
+            catch (e) { Swal.fire('Error', errMsg(e), 'error'); }
+        };
+
+        window.rejectWithdraw = async (reqId, userId, amount) => {
+            const r = await Swal.fire({ title: 'Reject?', text: `Refund ${amount} TK?`, icon: 'warning', showCancelButton: true, confirmButtonText: 'Yes' });
+            if (!r.isConfirmed) return;
+            try { await call('adminWithdraw', { reqId, action: 'reject' }); Swal.fire({ icon: 'success', title: 'Refunded', timer: 1500, showConfirmButton: false }); }
+            catch (e) { Swal.fire('Error', errMsg(e), 'error'); }
+        };
+
+        // --- CATEGORIES ---
+        function loadCategories() {
+            onValue(ref(db, 'categories'), s => {
+                const list = document.getElementById('category-list');
+                list.innerHTML = "";
+                const d = s.val();
+                allCategories = [];
+                if(!d) return list.innerHTML = "<div style='text-align:center;color:var(--text-gray);padding:40px;'>No categories</div>";
+
+                Object.entries(d).forEach(([key, c]) => {
+                    allCategories.push({id: key, name: c.name});
+                    list.innerHTML += `
+                    <div class="flat-card">
+                        <div class="cat-card-row">
+                            <img src="${esc(c.img)}" class="cat-img">
+                            <div class="cat-info"><div class="fc-title">${esc(c.name)}</div></div>
+                            <div class="cat-actions">
+                                <button class="btn btn-primary" style="padding:8px 12px;" onclick="editCategory('${key}')"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-danger" style="padding:8px 12px;" onclick="deleteCategory('${key}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+            });
+        }
+
+        window.addCategory = async () => {
+            const { value: formValues } = await Swal.fire({
+                title: 'Add Category',
+                html: `<input id="cat-name" class="swal2-input" placeholder="Name"><input id="cat-img" class="swal2-input" placeholder="Image URL">`,
+                confirmButtonText: 'Add',
+                preConfirm: () => ({ name: document.getElementById('cat-name').value, img: document.getElementById('cat-img').value })
+            });
+            if (formValues) { push(ref(db, 'categories'), formValues); Swal.fire({icon:'success', title:'Added', timer:1000, showConfirmButton:false}); }
+        };
+
+        window.editCategory = async (key) => {
+            const snap = await get(ref(db, `categories/${key}`));
+            const cat = snap.val();
+            const { value: formValues } = await Swal.fire({
+                title: 'Edit Category',
+                html: `<input id="cat-name" class="swal2-input" value="${esc(cat.name)}"><input id="cat-img" class="swal2-input" value="${esc(cat.img)}">`,
+                confirmButtonText: 'Update',
+                preConfirm: () => ({ name: document.getElementById('cat-name').value, img: document.getElementById('cat-img').value })
+            });
+            if (formValues) { update(ref(db, `categories/${key}`), formValues); Swal.fire({icon:'success', title:'Updated', timer:1000, showConfirmButton:false}); }
+        };
+
+        window.deleteCategory = (key) => {
+            Swal.fire({ title: 'Delete?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Yes' }).then((r) => {
+                if(r.isConfirmed) remove(ref(db, `categories/${key}`));
+            });
+        };
+
+        // --- MATCHES ---
+        function loadMatches() {
+            onValue(ref(db, 'matches'), s => {
+                const list = document.getElementById('match-list');
+                list.innerHTML = "";
+                const d = s.val();
+                allMatches = [];
+                if(!d) return list.innerHTML = "<div style='text-align:center;color:var(--text-gray);padding:40px;'>No matches</div>";
+
+                Object.entries(d).reverse().forEach(([key, m]) => {
+                    allMatches.push({id: key, ...m});
+                    let tagClass = m.status === 'Upcoming' ? 'tag-yellow' : (m.status === 'Ongoing' ? 'tag-blue' : 'tag-green');
+                    list.innerHTML += `
+                    <div class="flat-card">
+                        <div class="fc-header"><div class="fc-title">${esc(m.title)}</div><div class="fc-tag ${tagClass}">${esc(m.status)}</div></div>
+                        <div class="fc-detail"><span>Time:</span> <span class="fc-value">${m.time}</span></div>
+                        <div class="fc-detail"><span>Entry/Prize:</span> <span style="color:var(--success); font-weight:700;">৳${m.entry} / ৳${m.total_prize}</span></div>
+                        <div class="fc-detail"><span>Joined:</span> <span style="color:var(--warning); font-weight:700;">${m.joined || 0}/${m.total}</span></div>
+                        <div class="fc-actions">
+                            <button class="btn btn-primary" onclick="editMatch('${key}')"><i class="fas fa-cog"></i> Manage</button>
+                            <button class="btn btn-success" onclick="settleMatch('${key}')" title="Pay winners"><i class="fas fa-trophy"></i></button>
+                            <button class="btn btn-danger" onclick="deleteMatch('${key}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>`;
+                });
+            });
+        }
+
+        window.createMatchPopup = async () => {
+            let catOptions = allCategories.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
+            if(!catOptions) catOptions = "<option disabled>No categories</option>";
+
+            const { value: formValues } = await Swal.fire({
+                title: 'Create Match', width: 600,
+                html: `
+                    <div style="text-align:left">
+                        <label>Title</label><input id="swal-title" class="swal2-input">
+                        <div style="display:flex; gap:10px;"><input id="swal-date" type="date" class="swal2-input"><input id="swal-time" type="time" class="swal2-input"></div>
+                        <div style="display:flex; gap:10px;">
+                            <select id="swal-type" class="swal2-select"><option>Solo</option><option>Duo</option><option>Squad</option></select>
+                            <input id="swal-map" class="swal2-input" placeholder="Map">
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <input id="swal-entry" type="number" class="swal2-input" placeholder="Entry Fee">
+                            <input id="swal-prize" type="number" class="swal2-input" placeholder="Prize">
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <input id="swal-kill" type="number" class="swal2-input" placeholder="Per Kill">
+                            <input id="swal-total" type="number" class="swal2-input" placeholder="Total Slots">
+                        </div>
+                        <select id="swal-cat" class="swal2-select">${catOptions}</select>
+                    </div>
+                `,
+                confirmButtonText: 'Create',
+                preConfirm: () => {
+                    const date = document.getElementById('swal-date').value;
+                    const time = document.getElementById('swal-time').value;
+                    const catId = document.getElementById('swal-cat').value;
+                    if(!date || !time || catId === 'No categories') { Swal.showValidationMessage('Missing fields'); return; }
+                    const dObj = new Date(`${date}T${time}`);
+                    return {
+                        title: document.getElementById('swal-title').value || 'Match',
+                        time: dObj.toLocaleString(),
+                        type: document.getElementById('swal-type').value,
+                        map: document.getElementById('swal-map').value || 'Bermuda',
+                        entry: parseInt(document.getElementById('swal-entry').value) || 10,
+                        total_prize: parseInt(document.getElementById('swal-prize').value) || 100,
+                        per_kill: parseInt(document.getElementById('swal-kill').value) || 5,
+                        total: parseInt(document.getElementById('swal-total').value) || 48,
+                        categoryId: catId,
+                        status: 'Upcoming',
+                        timestamp: dObj.getTime(),
+                        joined: 0
+                    };
+                }
+            });
+            if (formValues) { push(ref(db, 'matches'), formValues); Swal.fire({icon: 'success', title: 'Created', timer: 1500, showConfirmButton: false}); }
+        };
+
+        window.deleteMatch = (key) => {
+            Swal.fire({ title: 'Delete?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Yes' }).then((r) => {
+                if(r.isConfirmed) remove(ref(db, `matches/${key}`));
+            });
+        };
+
+        window.editMatch = async (key) => {
+            const m = (await get(ref(db, `matches/${key}`))).val();
+            const sec = (await get(ref(db, `match_secrets/${key}`))).val() || {};
+            const { value: formValues } = await Swal.fire({
+                title: 'Manage Match',
+                html: `
+                    <select id="edit-status" class="swal2-select" style="width:100%">
+                        <option ${m.status=='Upcoming'?'selected':''}>Upcoming</option>
+                        <option ${m.status=='Ongoing'?'selected':''}>Ongoing</option>
+                        <option ${m.status=='Finished'?'selected':''}>Finished</option>
+                    </select>
+                    <input id="edit-roomid" class="swal2-input" value="${esc(sec.room_id || '')}" placeholder="Room ID">
+                    <input id="edit-pass" class="swal2-input" value="${esc(sec.room_pass || '')}" placeholder="Password">
+                    <input id="edit-split" class="swal2-input" value="${esc((m.prize_split || []).join(','))}" placeholder="Prize by rank e.g. 500,200,100 (optional)">
+                `,
+                confirmButtonText: 'Update',
+                preConfirm: () => ({
+                    status: document.getElementById('edit-status').value,
+                    room_id: document.getElementById('edit-roomid').value.trim(),
+                    room_pass: document.getElementById('edit-pass').value.trim(),
+                    split: document.getElementById('edit-split').value.split(',').map(x => parseFloat(x)).filter(x => x >= 0)
+                })
+            });
+            if (!formValues) return;
+            const upd = { status: formValues.status };
+            upd.prize_split = formValues.split.length ? formValues.split : null;
+            await update(ref(db, `matches/${key}`), upd);
+            await set(ref(db, `match_secrets/${key}`), { room_id: formValues.room_id, room_pass: formValues.room_pass });
+            Swal.fire({icon: 'success', title: 'Updated', timer: 1500, showConfirmButton: false});
+        };
+
+        window.settleMatch = async (key) => {
+            const { value: txt } = await Swal.fire({
+                title: 'Set winners & pay',
+                html: '<div style="font-size:12px;text-align:left;margin-bottom:6px">One line per player: <b>IGN, rank, kills</b><br>Example: <code>Rahim, 1, 5</code></div><textarea id="settle-txt" class="swal2-textarea" placeholder="Rahim, 1, 5&#10;Karim, 2, 3"></textarea>',
+                confirmButtonText: 'Pay now', showCancelButton: true,
+                preConfirm: () => document.getElementById('settle-txt').value
+            });
+            if (!txt) return;
+            const results = txt.split('\n').map(l => l.split(',').map(x => x.trim())).filter(p => p[0]).map(p => ({ ign: p[0], rank: parseInt(p[1]) || 0, kills: parseInt(p[2]) || 0 }));
+            try { const r = await call('adminSettleMatch', { matchId: key, results }); Swal.fire('Paid', 'Prizes credited: ' + Object.keys(r.paid).length + ' player(s). Match finished.', 'success'); }
+            catch (e) { Swal.fire('Error', errMsg(e), 'error'); }
+        };
+
+        // --- USERS ---
+        function renderUsers(users) {
+            const list = document.getElementById('user-list');
+            list.innerHTML = "";
+            if(users.length === 0) return list.innerHTML = "<div style='text-align:center; padding:40px; color:var(--text-gray);'>No users</div>";
+            users.forEach(u => {
+                list.innerHTML += `
+                <div class="flat-card">
+                    <div class="fc-header"><div class="fc-title">${u.username || 'User'}</div><div style="font-size:11px; color:var(--text-gray);">${u.uid ? u.uid.slice(0,6) : ''}</div></div>
+                    <div class="fc-detail"><span>Email:</span> ${u.email || 'N/A'}</div>
+                    <div style="display:flex; gap:12px; margin-top:10px; background:rgba(255,255,255,.05); padding:10px; border-radius:12px;">
+                        <div style="flex:1; text-align:center;"><div style="font-size:10px; color:var(--text-gray);">Deposit</div><div style="color:var(--success); font-weight:bold;">৳${u.deposit || 0}</div></div>
+                        <div style="flex:1; text-align:center;"><div style="font-size:10px; color:var(--text-gray);">Winning</div><div style="color:var(--warning); font-weight:bold;">৳${u.winning || 0}</div></div>
+                    </div>
+                    <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="editUserBalance('${u.uid}', ${u.deposit || 0}, ${u.winning || 0})"><i class="fas fa-edit"></i> Edit Balance</button>
+                </div>`;
+            });
+        }
+
+        window.filterUsers = () => {
+            const q = document.getElementById('user-search').value.toLowerCase();
+            const filtered = allUsers.filter(u => (u.username && u.username.toLowerCase().includes(q)) || (u.email && u.email.toLowerCase().includes(q)) || (u.uid && u.uid.toLowerCase().includes(q)));
+            renderUsers(filtered);
+        };
+
+        window.editUserBalance = async (uid, dep, win) => {
+            const { value: formValues } = await Swal.fire({
+                title: 'Adjust Balance',
+                html: `<input id="bal-dep" type="number" class="swal2-input" value="${dep}" placeholder="Deposit"><input id="bal-win" type="number" class="swal2-input" value="${win}" placeholder="Winning">`,
+                confirmButtonText: 'Save',
+                preConfirm: () => ({ deposit: parseInt(document.getElementById('bal-dep').value) || 0, winning: parseInt(document.getElementById('bal-win').value) || 0 })
+            });
+            if (formValues) { try { await call('adminAdjustBalance', { uid, ...formValues }); Swal.fire({icon:'success', title:'Updated', timer:1000, showConfirmButton:false}); } catch (e) { Swal.fire('Error', errMsg(e), 'error'); } }
+        };
+
+        // --- SMS READER ---
+        function randomKey() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            const arr = new Uint32Array(20);
+            crypto.getRandomValues(arr);
+            let k = 'RH';
+            arr.forEach((n, i) => { if (i % 5 === 0) k += '-'; k += chars[n % chars.length]; });
+            return k; // e.g. RH-ABCDE-FGHJK-LMNPQ-RSTUV
+        }
+
+        async function makeKey(kind, name, game) {
+            try {
+                const r = await call('adminCreateKey', { kind, name, game });
+                await Swal.fire({ icon: 'success', title: 'Key created — copy it now', html: `<div style="font-family:monospace; font-size:15px; font-weight:800; word-break:break-all;">${esc(r.key)}</div><div style="font-size:12px;color:#b91c1c;margin-top:8px">It will never be shown again.</div>`, confirmButtonText: 'Copy' });
+                if (navigator.clipboard) navigator.clipboard.writeText(r.key).catch(() => {});
+            } catch (e) { Swal.fire('Error', errMsg(e), 'error'); }
+        }
+        window.generateReaderKey = async () => { const n = document.getElementById('reader-name').value.trim() || 'Reader'; document.getElementById('reader-name').value = ''; await makeKey('reader', n, ''); };
+        window.generateGameKey = async () => { const n = document.getElementById('game-name').value.trim() || 'Game'; const g = document.getElementById('game-cat').value.trim(); document.getElementById('game-name').value = ''; document.getElementById('game-cat').value = ''; await makeKey('game', n, g); };
+        const keyCard = (id, r) => `
+            <div class="flat-card">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-weight:800;">${esc(r.name || 'Key')}</div>
+                    <span class="tag ${r.active ? 'tag-green' : 'tag-danger'}" style="padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700;">${r.active ? 'ACTIVE' : 'DISABLED'}</span>
+                </div>
+                <div style="font-family:monospace; font-size:13px; margin:8px 0; word-break:break-all;">${esc(r.hint || '')}${r.game ? ' · ' + esc(r.game) : ''}</div>
+                <div style="font-size:11px; color:var(--text-gray); margin-bottom:10px;">Created: ${new Date(r.createdAt || 0).toLocaleString()}<br>Last used: ${r.lastUsed ? new Date(r.lastUsed).toLocaleString() : 'never'}</div>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn ${r.active ? 'btn-danger' : 'btn-success'}" style="flex:1;" onclick="toggleKey('${id}', ${!r.active})">${r.active ? 'Deactivate' : 'Activate'}</button>
+                    <button class="btn btn-danger" onclick="deleteKey('${id}')"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>`;
+
+        function loadReaders() {
+            onValue(ref(db, 'apiKeys'), s => {
+                const d = s.val() || {};
+                const rows = Object.entries(d);
+                const rd = rows.filter(([, r]) => r.kind === 'reader'), gm = rows.filter(([, r]) => r.kind === 'game');
+                const empty = "<div style='text-align:center; padding:30px; color:var(--text-gray);'>No keys yet</div>";
+                document.getElementById('reader-list').innerHTML = rd.length ? rd.map(([id, r]) => keyCard(id, r)).join('') : empty;
+                document.getElementById('game-list').innerHTML = gm.length ? gm.map(([id, r]) => keyCard(id, r)).join('') : empty;
+            });
+
+            onValue(query(ref(db, 'sms_inbox'), limitToLast(15)), s => {
+                const d = s.val();
+                const box = document.getElementById('sms-log');
+                if (!d) { box.innerHTML = "<div style='color:var(--text-gray); font-size:13px;'>No SMS yet</div>"; return; }
+                const rows = Object.entries(d).map(([k, v]) => ({ k, ...v })).sort((a, b) => (b.receivedAt || 0) - (a.receivedAt || 0));
+                box.innerHTML = rows.map(v => `
+                    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(197,206,223,.12); font-size:12px;">
+                        <div><b>${esc(v.method)}</b> ${esc(v.k)}<br><span style="color:var(--text-gray);">${esc(v.sender)} · ${esc(v.time)}</span></div>
+                        <div style="text-align:right;"><b>৳${esc(v.amount)}</b><br><span style="color:${v.used ? '#b91c1c' : '#047857'};">${v.used ? 'Used' : 'Unused'}</span></div>
+                    </div>`).join('');
+            });
+        }
+        window.toggleKey = (id, val) => update(ref(db, 'apiKeys/' + id), { active: val });
+        window.deleteKey = async (id) => {
+            const r = await Swal.fire({ title: 'Delete key?', text: 'That device/server will stop working immediately.', icon: 'warning', showCancelButton: true });
+            if (r.isConfirmed) remove(ref(db, 'apiKeys/' + id));
+        };
+
+        // --- SETTINGS ---
+        function loadSettings() {
+            onValue(ref(db, 'app_settings'), s => {
+                const d = s.val();
+                if(d) {
+                    document.getElementById('set-app-name').value = d.app_name || '';
+                    
+                    document.getElementById('set-notice').value = d.notice || '';
+                    document.getElementById('set-popup').value = d.popup_text || '';
+                    document.getElementById('set-show-popup').value = d.show_popup ? 'true' : 'false';
+                    document.getElementById('set-bkash').value = d.bkash_number || '';
+                    document.getElementById('set-nagad').value = d.nagad_number || '';
+                    document.getElementById('set-rocket').value = d.rocket_number || '';
+                    document.getElementById('set-support').value = d.support_link || '';
+                    document.getElementById('set-shop').value = d.shop_link || '';
+                    document.getElementById('set-vid-add').value = d.how_to_add_money_link || '';
+                    document.getElementById('set-vid-join').value = d.how_to_play_link || '';
+                    document.getElementById('set-vid-room').value = d.how_to_get_room_id_link || '';
+                }
+            });
+        }
+
+        window.saveSettings = () => {
+            const data = {
+                app_name: document.getElementById('set-app-name').value,
+                
+                notice: document.getElementById('set-notice').value,
+                popup_text: document.getElementById('set-popup').value,
+                show_popup: document.getElementById('set-show-popup').value === 'true',
+                bkash_number: document.getElementById('set-bkash').value,
+                nagad_number: document.getElementById('set-nagad').value,
+                rocket_number: document.getElementById('set-rocket').value,
+                support_link: document.getElementById('set-support').value,
+                shop_link: document.getElementById('set-shop').value,
+                how_to_add_money_link: document.getElementById('set-vid-add').value,
+                how_to_play_link: document.getElementById('set-vid-join').value,
+                how_to_get_room_id_link: document.getElementById('set-vid-room').value
+            };
+            update(ref(db, 'app_settings'), data);
+            Swal.fire({icon: 'success', title: 'Saved!', timer: 1500, showConfirmButton: false});
+        };
+
+        // --- SLIDERS ---
+        function loadSliders() {
+            onValue(ref(db, 'app_settings/banners'), s => {
+                const d = s.val();
+                const list = document.getElementById('slider-list');
+                list.innerHTML = "";
+                if(d) {
+                    Object.entries(d).forEach(([k, v]) => {
+                        list.innerHTML += `
+                        <div class="flat-card" style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px;">
+                            <div style="display:flex; align-items:center; gap:14px;">
+                                <img src="${esc(v.img)}" style="width:70px; height:40px; object-fit:cover; border-radius:8px;">
+                                <div style="font-size:12px; color:var(--text-gray);">${v.link ? 'Linked' : 'No link'}</div>
+                            </div>
+                            <button class="btn btn-danger" onclick="deleteSlider('${k}')"><i class="fas fa-trash"></i></button>
+                        </div>`;
+                    });
+                } else {
+                    list.innerHTML = "<div style='text-align:center; padding:30px; color:var(--text-gray);'>No banners</div>";
+                }
+            });
+        }
+
+        window.addSlider = () => {
+            const img = document.getElementById('new-slider-img').value;
+            const link = document.getElementById('new-slider-link').value;
+            if(!img) return Swal.fire('Error', 'Image URL required', 'error');
+            push(ref(db, 'app_settings/banners'), { img, link: link || '' });
+            document.getElementById('new-slider-img').value = "";
+            document.getElementById('new-slider-link').value = "";
+            Swal.fire({icon:'success', title:'Added', timer:1000, showConfirmButton:false});
+        };
+
+        window.deleteSlider = (k) => remove(ref(db, `app_settings/banners/${k}`));
+
+        // --- NOTIFICATIONS ---
+        window.sendNotification = () => {
+            const title = document.getElementById('notif-title').value;
+            const body = document.getElementById('notif-body').value;
+            if(!title || !body) return Swal.fire('Error', 'Fill all fields', 'error');
+            push(ref(db, 'notifications'), { title, body, time: new Date().toLocaleString() });
+            Swal.fire({icon: 'success', title: 'Sent!', timer: 1500, showConfirmButton: false});
+            document.getElementById('notif-title').value = "";
+            document.getElementById('notif-body').value = "";
+        };
+    </script>
+</body>
+</html>
