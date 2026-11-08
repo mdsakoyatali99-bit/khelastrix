@@ -1,54 +1,45 @@
-# Khelastrix — deploy & test (project: ludofire-arena)
+# Khelastrix — secure version (Firebase project: ludofire-arena)
 
-## 0. One-time console checks (https://console.firebase.google.com/project/ludofire-arena)
-1. Authentication → Sign-in method → enable **Email/Password**.
-2. Realtime Database → confirm it exists (URL must be `https://ludofire-arena-default-rtdb.firebaseio.com`).
-3. Upgrade to **Blaze** (required for Cloud Functions + secrets).
-4. Authentication → Settings → Authorized domains: add your Render domain / custom domain if not using Firebase Hosting.
+Same app and features as before (single files `public/user.html` and `public/admin.html`), but money logic now runs on the server and the database is locked.
 
-## 1. Install & login
+## What is different from the old version
+- Old: wallet, join, withdraw, deposit were written by the browser (anyone could give themselves money) and the admin "PIN" was `1234` in the page. **New:** the browser cannot write balances; everything goes through Cloud Functions; the admin logs in with a real account.
+- Room ID/password is visible only to players who joined.
+- User text is HTML-escaped (no script injection). Passwords min 8.
+- New: Admin → **SMS Reader** keys and **Game API Keys** (see SMS_API.md, GAME_API.md). Keys are stored hashed.
+- Old users/data lived in the old Firebase project; this is a fresh database (users must register again).
+
+## 1. Firebase console (https://console.firebase.google.com/project/ludofire-arena)
+1. Build → Authentication → Sign-in method → enable **Email/Password**.
+2. Build → Realtime Database → make sure it exists.
+3. Upgrade to **Blaze** plan (required for Functions; the free quota is normally enough).
+
+## 2. Deploy (needs a computer, or GitHub Codespaces from your phone browser)
     npm i -g firebase-tools
-    firebase login
+    firebase login --no-localhost
     cd functions && npm install && cd ..
-
-## 2. Secrets (never commit these)
-    firebase functions:secrets:set OTP_PEPPER          # long random string
-    firebase functions:secrets:set GAME_TOKEN_SECRET   # long random string
-    firebase functions:secrets:set SMS_API_KEY         # SMS gateway key (any value while SMS_MODE=dev)
-Optional `functions/.env`:  `SMS_MODE=dev`  (switch to `live` + set `SMS_API_URL`, `SMS_SENDER_ID`).
-
-## 3. Deploy (Firebase Hosting + rules + functions)
+    firebase functions:secrets:set ADMIN_SETUP_CODE      # type a strong secret code
     firebase deploy --project ludofire-arena
-Hosting URLs: https://ludofire-arena.web.app and https://ludofire-arena.firebaseapp.com
+App: https://ludofire-arena.web.app/user.html · Admin: https://ludofire-arena.web.app/admin.html
 
-## 4. Make yourself admin
-Sign up in the app first, then (service-account JSON stays on YOUR machine, outside the repo):
-    cd functions
-    GOOGLE_APPLICATION_CREDENTIALS=/path/to/ludofire-arena-firebase-adminsdk-....json \
-      node ../scripts/set-admin.js you@mail.com "a long admin passphrase"
-Sign out/in, open `/admin`, unlock with the passphrase.
+Phone-only: open github.com → create repo → upload this folder → press `.`/Codespaces → run the commands above in its terminal.
 
-## 5. Test checklist
-- Register / login; profile appears under `users/<uid>` with deposit 0, winning 0.
-- Admin → API keys → create a **reader key**; copy it (shown once).
-- Simulate the SMS app:
-    curl -X POST https://asia-southeast1-ludofire-arena.cloudfunctions.net/ingestSms \
-      -H "x-reader-key: KX-..." -H "content-type: application/json" \
-      -d '{"trxId":"TEST123ABC","amount":100,"method":"bkash","sender":"01712345678"}'
-  Expect `{"ok":true,"settled":false}`.
-- In the app → Wallet → deposit with TrxID `TEST123ABC` (bkash) → balance +100. Repeating it must fail (already used).
-- Admin → Tournaments → create one → join as a player (fee deducted) → room code visible only to joined players.
-- Settle a result (admin or game server `gameResult`) → winning balance and leaderboard update.
-- Local emulators (no cost): `firebase emulators:start` after `firebase init emulators`.
+## 3. Become admin (once)
+1. Open the user app, register your own account.
+2. Open `/admin.html`, log in with that email+password → "First time? Become the admin" → enter the setup code → Activate.
+Only the first account can ever do this. Then delete the secret if you like: `firebase functions:secrets:destroy ADMIN_SETUP_CODE`.
 
-## Render alternative (static front-end only)
-Render replaces *Hosting* only; Functions and the database remain on Firebase.
-1. Push this folder to GitHub (the `.gitignore` already excludes service-account files).
-2. Render → New → Blueprint → select the repo (uses `render.yaml`), or New → Static Site with publish dir `public`.
-3. Add the resulting `*.onrender.com` domain to Firebase Auth → Authorized domains.
-4. Still run `firebase deploy --only functions,database --project ludofire-arena`.
+## 4. Test checklist
+- Register in user app → profile with ৳0.
+- Admin → SMS Reader → Generate Key → send the curl test from SMS_API.md → user Wallet → Add Money → enter TrxID `TEST123ABC` → balance +100; a second try says "already used".
+- Admin → Categories/Matches → create match (entry 10) → user joins (balance −10); room shows only after admin sets Room ID.
+- Admin → match → 🏆 → `PlayerName, 1, 2` → winner's winning balance increases.
+- User → Withdraw → Admin approves/rejects (reject refunds).
+
+## Running without a server (phone file manager)
+The two HTML files are self-contained: opening `user.html` from a file manager in Chrome can work, but login and some browsers block `file://`. For reliable use, host it: Firebase Hosting (above) or any static host (Render: New → Static Site, publish dir `public`; then add the domain in Authentication → Settings → Authorized domains). If the screen is blank, a red message at the bottom now shows the real error.
 
 ## Security notes
-- The Admin SDK service-account JSON was shared in chat. It is NOT used by the web app or Functions (Functions use their built-in identity), and it is not included in the output. Use it only for `set-admin.js`; afterwards, delete the key in Google Cloud Console → IAM → Service Accounts → Keys and generate a new one if needed.
-- `apiKey` in the web config is public by design; protect with rules, App Check, and API-key restrictions (Google Cloud → Credentials → HTTP referrer restriction to your domains).
-- `measurementId` is stored but Analytics is not initialised (CSP would also need extra hosts).
+- Add API-key restriction (Google Cloud → Credentials → HTTP referrers) for your domains once hosted.
+- The service-account JSON you shared is not used here; delete that key in Google Cloud → IAM → Service accounts → Keys if you don't need it.
+- Never put game/reader keys in public code; rotate by deleting and creating a new key.
